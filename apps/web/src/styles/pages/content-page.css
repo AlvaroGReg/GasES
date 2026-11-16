@@ -1,0 +1,10 @@
+.content-page { min-height: 510px; max-width: 850px; margin: 0 auto; padding: 70px 0 80px; }
+.content-page > .eyebrow { display: flex; align-items: center; gap: 8px; }
+.content-page h1 { margin: 19px 0 16px; font: 700 clamp(40px, 5vw, 58px)/1.1 'Manrope', sans-serif; letter-spacing: -2.7px; }
+.content-page h1 em { color: var(--green); font-style: normal; }
+.content-lead { max-width: 670px; margin: 0; color: #758279; font-size: 15px; line-height: 1.8; }
+@media (max-width: 650px) {
+  .content-page { min-height: 470px; padding: 45px 0 55px; }
+  .content-page h1 { font-size: 42px; letter-spacing: -2px; }
+  .content-lead { font-size: 12px; }
+}

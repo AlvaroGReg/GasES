@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { geoMercator, geoPath, type GeoPermissibleObjects } from 'd3-geo';
 import type { Theme } from '../types';
 import { useTranslation } from '../i18n';
+import '../styles/pages/HomePage.css';
 
 type ProvinceGeometry = { type: 'Feature'; properties: Record<string, string>; geometry: GeoPermissibleObjects };
 type GeoJson = { type: 'FeatureCollection'; features: ProvinceGeometry[] };

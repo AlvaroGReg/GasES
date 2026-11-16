@@ -1,3 +1,5 @@
+import '../styles/components/LogoConcepts.css';
+
 export function LogoConcepts() {
     return (
         <span className="brand-concepts" aria-hidden="true">

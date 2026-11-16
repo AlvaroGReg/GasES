@@ -1,6 +1,7 @@
 import type { Theme } from '../types';
 import { useTranslation } from '../i18n';
 import { LogoConcepts } from './LogoConcepts';
+import '../styles/components/Header.css';
 
 type HeaderProps = {
     theme: Theme;

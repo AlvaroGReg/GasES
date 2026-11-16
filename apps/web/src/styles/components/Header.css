@@ -1,0 +1,16 @@
+.topbar { height: 82px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e6ebe5; }
+.header-actions { display: flex; align-items: center; gap: 9px; }
+.theme-toggle { width: 37px; height: 37px; display: grid; place-items: center; padding: 0; color: #58665e; background: rgba(255,255,255,.72); border: 1px solid #e5eae4; border-radius: 9px; cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease; }
+.theme-toggle:hover { background: #fff; border-color: #cbd8cc; }
+.theme-toggle:focus-visible { outline: 2px solid #80aa82; outline-offset: 2px; }
+.theme-toggle svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.alert-link { display: inline-flex; align-items: center; gap: 7px; padding: 10px 15px; color: #fff; background: var(--green); border-radius: 8px; font-size: 11px; font-weight: 700; transition: background .2s, transform .2s; }
+.alert-link:hover { background: var(--green-dark); transform: translateY(-1px); }
+.alert-link span { font-size: 17px; line-height: 10px; font-weight: 400; }
+:root[data-theme='dark'] .theme-toggle { color: #d2ddd4; background: #1b251e; border-color: #344238; }
+:root[data-theme='dark'] .theme-toggle:hover { background: #27342a; border-color: #526858; }
+@media (max-width: 650px) {
+  .topbar { height: 70px; }
+  .header-actions { gap: 7px; }
+  .alert-link { padding: 9px 10px; font-size: 9px; }
+}

@@ -1,0 +1,118 @@
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  color: var(--text-primary);
+  background: var(--page-background);
+  --page-background: #101b1c;
+  --surface: #172526;
+  --surface-subtle: #202f30;
+  --text-primary: #e8f1f0;
+  --text-secondary: #b2c2c1;
+  --text-tertiary: #8fa4a3;
+  --border: #2d4243;
+  --border-subtle: #26393a;
+  --accent-soft: #382b20;
+  --green: var(--brand-light);
+  --green-dark: #3bb2b6;
+  --muted: var(--text-secondary);
+  --line: var(--border);
+}
+:root[data-theme='dark'] body { color: var(--text-primary); background: var(--page-background); }
+:root[data-theme='dark'] .topbar, :root[data-theme='dark'] .hero, :root[data-theme='dark'] .site-footer { border-color: var(--border); }
+:root[data-theme='dark'] .brand small, :root[data-theme='dark'] .eyebrow,
+:root[data-theme='dark'] .card-topline, :root[data-theme='dark'] .source-tag,
+:root[data-theme='dark'] .hero-copy > p, :root[data-theme='dark'] .national-price small,
+:root[data-theme='dark'] .national-meta span, :root[data-theme='dark'] .data-caveat,
+:root[data-theme='dark'] .section-heading p, :root[data-theme='dark'] .map-legend,
+:root[data-theme='dark'] .map-method, :root[data-theme='dark'] .map-attribution,
+:root[data-theme='dark'] .detail-kicker, :root[data-theme='dark'] .province-detail dt,
+:root[data-theme='dark'] .detail-price small, :root[data-theme='dark'] .no-data-note small,
+:root[data-theme='dark'] .history-empty p, :root[data-theme='dark'] .history-empty > span,
+:root[data-theme='dark'] .observations-empty p, :root[data-theme='dark'] .observations-note,
+:root[data-theme='dark'] .footer-brand p, :root[data-theme='dark'] .footer-links a,
+:root[data-theme='dark'] .footer-links span, :root[data-theme='dark'] .footer-links p,
+:root[data-theme='dark'] .footer-bottom, :root[data-theme='dark'] .content-lead,
+:root[data-theme='dark'] .information-card p, :root[data-theme='dark'] .information-notice,
+:root[data-theme='dark'] .about-repository p { color: #a5b1a8; }
+:root[data-theme='dark'] .national-card, :root[data-theme='dark'] .map-card,
+:root[data-theme='dark'] .history-card, :root[data-theme='dark'] .observations-card,
+:root[data-theme='dark'] .information-card, :root[data-theme='dark'] .about-repository {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: 0 8px 26px rgba(0,0,0,.14);
+}
+:root[data-theme='dark'] .source-tag, :root[data-theme='dark'] .period-pill,
+:root[data-theme='dark'] .row-count, :root[data-theme='dark'] .theme-toggle {
+  color: var(--text-secondary);
+  background: var(--surface-subtle);
+  border-color: var(--border);
+}
+:root[data-theme='dark'] .alert-banner, :root[data-theme='dark'] .information-notice {
+  color: var(--text-secondary);
+  background: var(--accent-soft);
+  border-color: #65472f;
+}
+:root[data-theme='dark'] .alert-banner p, :root[data-theme='dark'] .information-notice p { color: var(--text-secondary); }
+:root[data-theme='dark'] .national-meta strong, :root[data-theme='dark'] .province-detail dd,
+:root[data-theme='dark'] .detail-price, :root[data-theme='dark'] .province-detail h3,
+:root[data-theme='dark'] .history-empty strong, :root[data-theme='dark'] .observations-empty strong,
+:root[data-theme='dark'] .section-heading h2, :root[data-theme='dark'] .content-page h1,
+:root[data-theme='dark'] .information-card h2, :root[data-theme='dark'] .about-repository h2,
+:root[data-theme='dark'] .footer-links strong { color: #e6eee8; }
+:root[data-theme='dark'] .content-page h1 em { color: #a7cdaa; }
+:root[data-theme='dark'] .coming-soon { color: var(--text-primary); background: var(--surface); }
+:root[data-theme='dark'] .observations-note, :root[data-theme='dark'] th { background: var(--surface-subtle); border-color: var(--border); }
+:root[data-theme='dark'] .map-canvas { background: radial-gradient(ellipse at 50% 56%, var(--surface-subtle) 0, var(--surface) 70%); }
+:root[data-theme='dark'] .province-shape { stroke: var(--surface); }
+:root[data-theme='dark'] .province-shape:hover, :root[data-theme='dark'] .province-shape:focus-visible,
+:root[data-theme='dark'] .province-shape.is-selected { stroke: var(--brand-light); }
+:root[data-theme='dark'] .no-data-note p, :root[data-theme='dark'] .detail-placeholder p { color: #c1cdc4; }
+:root[data-theme='dark'] .detail-icon, :root[data-theme='dark'] .pointer-icon,
+:root[data-theme='dark'] .empty-chart-icon, :root[data-theme='dark'] .observation-symbol { color: #afd0b1; background: #2b3b2e; }
+:root[data-theme='dark'] .chart-point > span, :root[data-theme='dark'] .chart-point small { color: #a9b6ac; }
+:root[data-theme='dark'] .alert-banner p { color: #b5c4b8; }
+:root[data-theme='dark'] .github-mark { background: #344238; }
+:root[data-theme='dark'] thead { background: #202b23; }
+:root[data-theme='dark'] th { color: #a0aea3; background: #202b23; border-color: #303d33; }
+:root[data-theme='dark'] td { color: #c0ccc2; border-color: #303d33; }
+:root[data-theme='dark'] .topbar, :root[data-theme='dark'] .hero, :root[data-theme='dark'] .site-footer,
+:root[data-theme='dark'] .national-meta, :root[data-theme='dark'] .data-caveat,
+:root[data-theme='dark'] .observations-note, :root[data-theme='dark'] .footer-bottom,
+:root[data-theme='dark'] .province-detail, :root[data-theme='dark'] .province-detail dl div,
+:root[data-theme='dark'] .clear-selection { border-color: var(--border); }
+
+/* Shared palette application */
+.topbar, .hero, .site-footer { border-color: var(--border); }
+.national-card, .map-card, .history-card, .observations-card,
+.information-card, .about-repository { background: var(--surface); border-color: var(--border); }
+.theme-toggle { color: var(--text-secondary); background: var(--surface); border-color: var(--border); }
+.theme-toggle:hover { background: var(--surface-subtle); border-color: var(--brand-light); }
+.theme-toggle:focus-visible { outline-color: var(--brand-light); }
+.source-tag, .period-pill, .row-count { color: var(--text-secondary); background: var(--surface-subtle); border-color: var(--border); }
+.alert-banner, .information-notice { color: var(--text-secondary); background: var(--accent-soft); border-color: color-mix(in srgb, var(--brand-orange) 30%, transparent); }
+.alert-banner p, .information-notice p { color: var(--text-secondary); }
+.alert-art { color: var(--brand-dark); background: var(--brand-orange); }
+.coming-soon { color: var(--brand-dark); background: var(--surface); }
+.live-dot, .source-tag i { background: var(--brand-light); }
+.hero-copy > p, .content-lead, .section-heading p, .map-legend,
+.footer-brand p, .footer-links a, .footer-links span, .footer-links p,
+.information-card p, .about-repository p { color: var(--text-secondary); }
+.brand small, .eyebrow, .card-topline, .map-method, .detail-kicker,
+.footer-bottom, .map-attribution { color: var(--text-tertiary); }
+.national-meta, .data-caveat, .observations-note, .footer-bottom { border-color: var(--border-subtle); }
+.national-meta span, .data-caveat, .province-detail dt, .detail-price small,
+.history-empty p, .history-empty > span, .observations-empty p { color: var(--text-secondary); }
+.national-meta strong, .province-detail dd, .detail-price, .province-detail h3,
+.history-empty strong, .observations-empty strong, .section-heading h2,
+.content-page h1, .information-card h2, .about-repository h2,
+.footer-links strong { color: var(--text-primary); }
+.detail-icon, .pointer-icon, .empty-chart-icon, .observation-symbol { color: var(--brand-light); background: var(--surface-subtle); }
+.clear-selection, .text-link, .footer-links a:hover { color: var(--green); }
+.observations-note, th { color: var(--text-secondary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+td { color: var(--text-secondary); border-color: var(--border-subtle); }
+.map-canvas { background: radial-gradient(ellipse at 50% 56%, var(--surface-subtle) 0, var(--surface) 70%); }
+.province-shape { stroke: var(--surface); }
+.province-shape:hover, .province-shape:focus-visible, .province-shape.is-selected { stroke: var(--brand-light); }
+.map-spinner { border-color: var(--border); border-top-color: var(--brand-light); }
+.chart-point i { background: var(--brand-light); }
+.brand strong span { color: var(--brand-light); }
+:root[data-theme='dark'] .theme-toggle:hover { background: var(--surface); border-color: var(--brand-light); }

@@ -25,22 +25,27 @@ apps/web/src/
   components/
     Footer.tsx
     Header.tsx
+    LogoConcepts.tsx
   pages/
     AboutPage.tsx
     HomePage.tsx
     InformationPage.tsx
+  styles/
+    components/
+    pages/
+    global.css
+    theme.css
   App.tsx
   i18n.tsx
   main.tsx
-  styles.css
   types.ts
 ```
 
-- `main.tsx` mounts the React app and loads the shared stylesheet.
+- `main.tsx` mounts the React app and loads the global foundation and theme stylesheets.
 - `App.tsx` selects the active page, manages the theme, and renders the shared header and footer around the page.
-- `components/Header.tsx` renders the brand, the alert call to action, and the theme toggle. There is no primary navigation bar in the header.
-- `components/Footer.tsx` links to the in-app pages and the Geoportal API documentation.
-- `pages/` contains the Home, Information, and About page views.
+- `components/` contains the shared header, footer, and brand mark; each component imports its own stylesheet from `styles/components/`.
+- `pages/` contains the Home, Information, and About page views; each page imports its own stylesheet from `styles/pages/`. The content pages also share `content-page.css`.
+- `styles/global.css` defines global tokens, resets, and the page shell. `styles/theme.css` applies the shared light and dark theme palette.
 - `types.ts` defines the page and theme unions shared between components.
 - `i18n.tsx` defines the available and planned locale identifiers, the Spanish message catalog, the localization provider, and locale-aware formatting configuration. Add a message catalog before exposing a locale as available. The current interface intentionally has no language selector while Spanish is the only available locale.
 

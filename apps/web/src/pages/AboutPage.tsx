@@ -1,4 +1,6 @@
 import { useTranslation } from '../i18n';
+import '../styles/pages/content-page.css';
+import '../styles/pages/AboutPage.css';
 
 export function AboutPage() {
     const { t } = useTranslation();
