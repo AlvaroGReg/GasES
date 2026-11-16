@@ -11,6 +11,7 @@ Describe the full Calorjusto frontend: its shared shell, navigation, theme prefe
 - Allow the user to select a province on an interactive map.
 - Explain the currently known data source and link to the project's repository.
 - Support light and dark themes.
+- Keep all user-facing text in a typed localization catalog. Spanish (`es-ES`) is the only available locale; Galician, Basque, and Catalan are planned.
 - Document which parts are currently placeholders pending an API contract.
 
 Subscription creation and cancellation are part of the frontend product direction, but there is no subscription form or management view in the current frontend.
@@ -29,6 +30,7 @@ apps/web/src/
     HomePage.tsx
     InformationPage.tsx
   App.tsx
+  i18n.tsx
   main.tsx
   styles.css
   types.ts
@@ -40,6 +42,7 @@ apps/web/src/
 - `components/Footer.tsx` links to the in-app pages and the Geoportal API documentation.
 - `pages/` contains the Home, Information, and About page views.
 - `types.ts` defines the page and theme unions shared between components.
+- `i18n.tsx` defines the available and planned locale identifiers, the Spanish message catalog, the localization provider, and locale-aware formatting configuration. Add a message catalog before exposing a locale as available. The current interface intentionally has no language selector while Spanish is the only available locale.
 
 ## Navigation and shared shell
 
