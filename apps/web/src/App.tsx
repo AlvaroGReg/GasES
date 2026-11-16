@@ -6,7 +6,7 @@ import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import type { Page, Theme } from './types';
 
-const THEME_STORAGE_KEY = 'calorjusto-theme';
+const THEME_STORAGE_KEY = 'gases-theme';
 
 function getStoredTheme(): Theme | null {
   try {

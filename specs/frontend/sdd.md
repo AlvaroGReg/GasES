@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Describe the full Calorjusto frontend: its shared shell, navigation, theme preference, user-facing pages, data-source explanation, and current implementation status. The overall application architecture is in [Technical Architecture](../../tech.md).
+Describe the full GasEs frontend: its shared shell, navigation, theme preference, user-facing pages, data-source explanation, and current implementation status. The overall application architecture is in [Technical Architecture](../../tech.md).
 
 ## Scope
 
@@ -61,7 +61,7 @@ The shared header and footer appear on all three views.
 ## Theme preference
 
 - Support light and dark themes across all views.
-- Before React renders, select the initial theme from the saved `calorjusto-theme` preference (`light` or `dark`), falling back to the operating system's `prefers-color-scheme` setting when no valid saved choice exists.
+- Before React renders, select the initial theme from the saved `gases-theme` preference (`light` or `dark`), falling back to the operating system's `prefers-color-scheme` setting when no valid saved choice exists.
 - The theme-toggle icon in the header is accessible by keyboard and exposes an action-specific accessible label.
 - Toggling changes the theme and stores the explicit choice in local storage.
 - While the user has no saved choice, follow changes to the operating system theme. A saved choice takes precedence until the user changes it.
@@ -99,7 +99,7 @@ The current copy deliberately does not describe request frequency, validation, p
 
 ### About us (`#/sobre`)
 
-Introduce Calorjusto as a project to make public gas oil C prices easier to consult and follow. Link to the project repository: <https://github.com/AlvaroGReg/GasES>.
+Introduce GasEs as a project to make public gas oil C prices easier to consult and follow. Link to the project repository: <https://github.com/AlvaroGReg/GasES>.
 
 ## Data interpretation
 

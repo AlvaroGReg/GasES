@@ -10,7 +10,7 @@ export function Footer({ navigate }: FooterProps) {
             <div className="footer-brand">
                 <a className="brand" href="#/inicio" onClick={() => navigate('inicio')}>
                     <span className="brand-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 4v14m0 0 7-7m-7 7-7-7M7 22v5h18v-5" /></svg></span>
-                    <span><strong>calor<span>justo</span></strong><small>{t('footer.tagline')}</small></span>
+                    <span><strong>gas<span>es</span></strong><small>{t('footer.tagline')}</small></span>
                 </a>
                 <p>{t('footer.description')}</p>
             </div>
@@ -28,7 +28,7 @@ export function Footer({ navigate }: FooterProps) {
                 </div>
             </div>
             <div className="footer-bottom">
-                <span>© {new Date().getFullYear()} Calorjusto</span>
+                <span>© {new Date().getFullYear()} GasEs</span>
                 <span>{t('footer.disclaimer')}</span>
             </div>
         </footer>

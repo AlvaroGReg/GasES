@@ -13,7 +13,7 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
         <header className="topbar">
             <a className="brand" href="#/inicio" aria-label={t('navigation.brandHome')}>
                 <span className="brand-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 4v14m0 0 7-7m-7 7-7-7M7 22v5h18v-5" /></svg></span>
-                <span><strong>calor<span>justo</span></strong><small>{t('header.observatory')}</small></span>
+                <span><strong>gas<span>es</span></strong><small>{t('header.observatory')}</small></span>
             </a>
             <div className="header-actions">
                 <a className="alert-link" href="#/inicio#alertas"><span>＋</span> {t('navigation.createAlert')}</a>
