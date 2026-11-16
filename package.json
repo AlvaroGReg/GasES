@@ -1,0 +1,11 @@
+{
+  "name": "gases-api",
+  "private": true,
+  "packageManager": "pnpm@10.12.1",
+  "scripts": {
+    "dev": "docker compose up --watch",
+    "dev:down": "docker compose down",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck"
+  }
+}

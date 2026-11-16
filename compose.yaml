@@ -1,0 +1,115 @@
+services:
+  postgres:
+    image: postgres:17.5-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-gases}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gases_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-gases_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/dev.Dockerfile
+    command: ["pnpm", "--filter", "@gases/api", "start:dev"]
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://${POSTGRES_USER:-gases}:${POSTGRES_PASSWORD:-gases_dev}@postgres:5432/${POSTGRES_DB:-gases_dev}
+      WEB_ORIGIN: http://localhost:5173
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/api/src
+          target: /workspace/apps/api/src
+        - action: sync+restart
+          path: ./apps/api/tsconfig.json
+          target: /workspace/apps/api/tsconfig.json
+        - action: sync+restart
+          path: ./apps/api/nest-cli.json
+          target: /workspace/apps/api/nest-cli.json
+        - action: rebuild
+          path: ./pnpm-workspace.yaml
+        - action: rebuild
+          path: ./pnpm-lock.yaml
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./apps/api/package.json
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/dev.Dockerfile
+    command: ["pnpm", "--filter", "@gases/web", "dev", "--host", "0.0.0.0"]
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/web/src
+          target: /workspace/apps/web/src
+        - action: sync+restart
+          path: ./apps/web/index.html
+          target: /workspace/apps/web/index.html
+        - action: sync+restart
+          path: ./apps/web/vite.config.ts
+          target: /workspace/apps/web/vite.config.ts
+        - action: sync+restart
+          path: ./apps/web/tsconfig.json
+          target: /workspace/apps/web/tsconfig.json
+        - action: rebuild
+          path: ./pnpm-workspace.yaml
+        - action: rebuild
+          path: ./pnpm-lock.yaml
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./apps/web/package.json
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/dev.Dockerfile
+    command: ["pnpm", "--filter", "@gases/worker", "dev"]
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-gases}:${POSTGRES_PASSWORD:-gases_dev}@postgres:5432/${POSTGRES_DB:-gases_dev}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/worker/src
+          target: /workspace/apps/worker/src
+        - action: sync+restart
+          path: ./apps/worker/tsconfig.json
+          target: /workspace/apps/worker/tsconfig.json
+        - action: rebuild
+          path: ./pnpm-workspace.yaml
+        - action: rebuild
+          path: ./pnpm-lock.yaml
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./apps/worker/package.json
+
+volumes:
+  postgres_data:
