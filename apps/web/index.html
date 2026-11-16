@@ -1,9 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Heating oil price alerts</title>
+    <meta name="theme-color" content="#f6f8f5" />
+    <meta name="description" content="Observatorio de datos de gasóleo C en España." />
+    <title>Calorjusto — datos de gasóleo C</title>
+    <script>
+      try {
+        const savedTheme = localStorage.getItem('calorjusto-theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.dataset.theme =
+          savedTheme === 'dark' || savedTheme === 'light'
+            ? savedTheme
+            : systemPrefersDark ? 'dark' : 'light';
+        document.querySelector('meta[name="theme-color"]').content =
+          document.documentElement.dataset.theme === 'dark' ? '#131a16' : '#f7f8f5';
+      } catch {
+        document.documentElement.dataset.theme =
+          window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.querySelector('meta[name="theme-color"]').content =
+          document.documentElement.dataset.theme === 'dark' ? '#131a16' : '#f7f8f5';
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

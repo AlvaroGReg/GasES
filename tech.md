@@ -86,16 +86,9 @@ The email includes both available references, their dates, and a reminder to con
 
 Persist the state needed to enforce the email limit across process restarts. Design execution to avoid duplicate emails on retries or concurrent runs; record send outcomes and ensure failed notifications are not presented as sent. Retry details and Brevo guarantees remain pending.
 
-## Frontend and provincial map
+## Frontend architecture
 
-The initial screen displays the national average and a provincial heat map. Selecting a province displays its latest average and retrieval date; explicitly indicate when no provincial data exists. Also show the date and observation count for references to provide coverage context.
-
-- Province below the national average: green; above it: red; equal: white.
-- The smaller the difference from the national average, the closer the color is to white. The initial scale uses increments of **€0.05/litre**, which may be adjusted.
-- The contrast of a provincial average fades from 1.0 to 0 as the data ages, tending toward gray after **three months**.
-- A province with no data must be represented differently from a province with old data.
-
-The exact palette, saturation limits, fading formula, and behavior when the national average is unavailable remain to be defined.
+The frontend is a React application built with Vite. Its page, navigation, theme, and map requirements are described in the [Frontend SDD](specs/frontend/sdd.md). The provincial map uses **`d3-geo`** to project province GeoJSON and render it as SVG; the current implementation fetches the boundary asset at runtime and maps source province names in the Home page.
 
 ## Initial data model
 
@@ -131,6 +124,5 @@ Keep the Geoportal adapter separate from calculations and alert logic. In partic
 - Specific source-freshness threshold, retries, recovery, and partial-failure handling.
 - API contracts, input validation, email normalization, and subscription management mechanisms.
 - Alert deletion or deactivation and data and history retention policy.
-- PostgreSQL access technology, frontend tooling, and mapping library.
-- Exact map formulas and colors, including the precise three-month interpretation and the case when no national average is available.
+- PostgreSQL access technology and frontend tooling beyond React/Vite and `d3-geo` for the provincial map.
 - Historical data loading strategy, if historical data is offered; verify the availability and semantics of the official history endpoint.
