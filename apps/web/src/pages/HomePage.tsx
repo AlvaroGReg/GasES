@@ -13,21 +13,17 @@ const provincialAverages: Record<string, PriceReference> = {};
 const observations: Observation[] = [];
 const history: { date: string; price: number | null }[] = [];
 
-const provinceNames: Record<string, string> = {
-    'A Coruña': 'A Coruña', 'La Coruña': 'A Coruña', 'Alacant': 'Alicante', Alicante: 'Alicante',
-    'Almería': 'Almería', Araba: 'Álava', Álava: 'Álava', Asturias: 'Asturias', 'Ávila': 'Ávila',
-    Badajoz: 'Badajoz', 'Illes Balears': 'Illes Balears', Baleares: 'Illes Balears', Barcelona: 'Barcelona',
-    Bizkaia: 'Bizkaia', Vizcaya: 'Bizkaia', Burgos: 'Burgos', Cáceres: 'Cáceres', Cádiz: 'Cádiz',
-    Cantabria: 'Cantabria', Castellón: 'Castellón', Castelló: 'Castellón', Ceuta: 'Ceuta', Ciudad: 'Ciudad Real',
-    'Ciudad Real': 'Ciudad Real', Córdoba: 'Córdoba', Cuenca: 'Cuenca', Girona: 'Girona', Gerona: 'Girona',
-    Granada: 'Granada', Guadalajara: 'Guadalajara', Gipuzkoa: 'Gipuzkoa', Guipúzcoa: 'Gipuzkoa', Huelva: 'Huelva',
-    Huesca: 'Huesca', Jaén: 'Jaén', 'La Rioja': 'La Rioja', 'Las Palmas': 'Las Palmas', León: 'León', Lleida: 'Lleida',
-    Lérida: 'Lleida', Lugo: 'Lugo', Madrid: 'Madrid', Málaga: 'Málaga', Melilla: 'Melilla', Murcia: 'Murcia',
-    Navarra: 'Navarra', Ourense: 'Ourense', Orense: 'Ourense', Palencia: 'Palencia', Pontevedra: 'Pontevedra',
-    Salamanca: 'Salamanca', 'Santa Cruz de Tenerife': 'Santa Cruz de Tenerife', Segovia: 'Segovia', Sevilla: 'Sevilla',
-    Soria: 'Soria', Tarragona: 'Tarragona', Teruel: 'Teruel', Toledo: 'Toledo', Valencia: 'Valencia', València: 'Valencia',
-    Valladolid: 'Valladolid', Zamora: 'Zamora', Zaragoza: 'Zaragoza',
-};
+const normalizeProvinceName = (name: string) => name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLocaleLowerCase('es');
+const provinceAliases = new Map<string, string>([
+    ['La Coruña', 'A Coruña'], ['Alacant', 'Alicante'], ['Alacant/Alicante', 'Alicante'],
+    ['Araba', 'Álava'], ['Araba/Álava', 'Álava'], ['Baleares', 'Illes Balears'],
+    ['Vizcaya', 'Bizkaia'], ['Bizkaia/Vizcaya', 'Bizkaia'], ['Castelló', 'Castellón'],
+    ['Castelló/Castellón', 'Castellón'], ['Gerona', 'Girona'], ['Guipúzcoa', 'Gipuzkoa'],
+    ['Gipuzkoa/Guipúzcoa', 'Gipuzkoa'], ['Lérida', 'Lleida'], ['Orense', 'Ourense'],
+    ['Santa Cruz De Tenerife', 'Santa Cruz de Tenerife'], ['València', 'Valencia'],
+    ['València/Valencia', 'Valencia'],
+].map(([alias, canonical]) => [normalizeProvinceName(alias), canonical] as const));
+const canaryProvinces = new Set(['Las Palmas', 'Santa Cruz de Tenerife']);
 
 const euro = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 3 });
 const dateFormat = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -57,11 +53,25 @@ export function HomePage({ theme }: HomePageProps) {
 
     const mapPaths = useMemo(() => {
         if (!geoJson) return [];
-        const projection = geoMercator().fitSize([620, 430], geoJson as never);
-        const path = geoPath(projection);
-        return geoJson.features.map((feature, index) => {
+        const features = geoJson.features.map((feature) => {
             const sourceName = feature.properties.name ?? feature.properties.NAME_2 ?? feature.properties.provincia ?? '';
-            const name = provinceNames[sourceName] ?? sourceName;
+            const name = provinceAliases.get(normalizeProvinceName(sourceName)) ?? sourceName;
+            return { feature, name };
+        });
+        const mainlandFeatures = features.filter(({ name }) => !canaryProvinces.has(name));
+        const canaryFeatures = features.filter(({ name }) => canaryProvinces.has(name));
+        const projection = geoMercator().fitExtent([[150, 14], [610, 416]], {
+            type: 'FeatureCollection',
+            features: mainlandFeatures.map(({ feature }) => feature),
+        } as never);
+        const canaryProjection = geoMercator().fitExtent([[22, 354], [132, 411]], {
+            type: 'FeatureCollection',
+            features: canaryFeatures.map(({ feature }) => feature),
+        } as never);
+        const mainlandPath = geoPath(projection);
+        const canaryPath = geoPath(canaryProjection);
+        return features.map(({ feature, name }, index) => {
+            const isCanary = canaryProvinces.has(name);
             const reference = provincialAverages[name];
             const difference = reference && nationalAverage ? reference.price - nationalAverage.price : 0;
             const intensity = Math.min(Math.abs(difference) / 0.25, 1);
@@ -71,12 +81,20 @@ export function HomePage({ theme }: HomePageProps) {
                 ? difference < 0 ? `rgba(60, 139, 101, ${0.18 + intensity * 0.62})` : difference > 0 ? `rgba(206, 97, 82, ${0.18 + intensity * 0.62})` : '#fff'
                 : theme === 'dark' ? '#303a33' : '#edf0ec';
             const faded = reference && freshness < 1 ? `color-mix(in srgb, ${base} ${Math.round(freshness * 100)}%, #b9c1bb)` : base;
-            return { key: `${name}-${index}`, name, d: path(feature as GeoPermissibleObjects) ?? '', fill: faded, price: reference?.price };
+            return {
+                key: `${name}-${index}`,
+                name,
+                d: (isCanary ? canaryPath : mainlandPath)(feature as GeoPermissibleObjects) ?? '',
+                fill: faded,
+                price: reference?.price,
+                isCanaryProvince: isCanary,
+            };
         });
     }, [geoJson, theme]);
 
     const selectedAverage = selectedProvince ? provincialAverages[selectedProvince] : null;
     const chartTitle = selectedProvince ? `Evolución en ${selectedProvince}` : 'Evolución nacional';
+    const renderProvince = (province: (typeof mapPaths)[number]) => <path key={province.key} d={province.d} fill={province.fill} className={`province-shape ${selectedProvince === province.name ? 'is-selected' : ''}`} tabIndex={0} role="button" aria-label={`${province.name}${province.price === undefined ? ', sin datos disponibles' : `, ${euro.format(province.price)} por litro`}`} onClick={() => setSelectedProvince(province.name)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') setSelectedProvince(province.name); }}><title>{province.name}{province.price === undefined ? ' · Sin datos disponibles' : ` · ${euro.format(province.price)}/l`}</title></path>;
 
     return (
         <>
@@ -106,7 +124,9 @@ export function HomePage({ theme }: HomePageProps) {
                 <div className="map-card">
                     <div className="map-canvas">
                         {mapPaths.length > 0 ? <svg className="province-map" viewBox="0 0 620 430" role="img" aria-label="Mapa interactivo de las provincias de España">
-                            {mapPaths.map((province) => <path key={province.key} d={province.d} fill={province.fill} className={`province-shape ${selectedProvince === province.name ? 'is-selected' : ''}`} tabIndex={0} role="button" aria-label={`${province.name}${province.price === undefined ? ', sin datos disponibles' : `, ${euro.format(province.price)} por litro`}`} onClick={() => setSelectedProvince(province.name)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') setSelectedProvince(province.name); }}><title>{province.name}{province.price === undefined ? ' · Sin datos disponibles' : ` · ${euro.format(province.price)}/l`}</title></path>)}
+                            {mapPaths.filter((province) => !province.isCanaryProvince).map(renderProvince)}
+                            <rect x="12" y="344" width="130" height="77" fill="none" stroke="currentColor" strokeWidth="1" opacity=".55" aria-hidden="true" />
+                            {mapPaths.filter((province) => province.isCanaryProvince).map(renderProvince)}
                         </svg> : <div className="map-loading" role="status"><span className="map-spinner" />{mapError ? 'No se ha podido cargar el mapa provincial.' : 'Cargando límites provinciales…'}</div>}
                         <div className="map-attribution">Límites provinciales · <a href="https://github.com/codeforgermany/click_that_hood" target="_blank" rel="noreferrer">Click That ’Hood</a></div>
                     </div>

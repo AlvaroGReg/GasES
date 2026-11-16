@@ -72,6 +72,7 @@ a { color: inherit; text-decoration: none; }
 .map-canvas { position: relative; min-height: 410px; display: grid; place-items: center; padding: 12px 20px 21px; background: radial-gradient(ellipse at 50% 56%, #fafbf8 0, #fff 70%); }
 .province-map { width: min(100%, 610px); height: auto; max-height: 410px; overflow: visible; }
 .province-shape { stroke: #fff; stroke-width: .85px; cursor: pointer; transition: fill .2s ease, stroke .15s ease, filter .15s ease; vector-effect: non-scaling-stroke; }
+.province-shape:focus { outline: none; }
 .province-shape:hover, .province-shape:focus-visible { stroke: #476e54; stroke-width: 1.8px; filter: brightness(.96); outline: none; }
 .province-shape.is-selected { stroke: #23563a; stroke-width: 2.5px; filter: drop-shadow(0 1px 2px rgba(30, 70, 43, .24)); }
 .map-loading { display: flex; align-items: center; gap: 10px; color: #818d85; font-size: 11px; }
