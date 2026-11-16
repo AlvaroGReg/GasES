@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f6f8f5" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#f5f8f7" />
     <meta name="description" content="Observatorio de datos de gasóleo C en España." />
     <title>GasEs — datos de gasóleo C</title>
     <script>
@@ -16,12 +17,12 @@
                     ? savedTheme
                     : systemPrefersDark ? 'dark' : 'light';
             document.querySelector('meta[name="theme-color"]').content =
-                document.documentElement.dataset.theme === 'dark' ? '#131a16' : '#f7f8f5';
+                document.documentElement.dataset.theme === 'dark' ? '#101b1c' : '#f5f8f7';
         } catch {
             document.documentElement.dataset.theme =
                 window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             document.querySelector('meta[name="theme-color"]').content =
-                document.documentElement.dataset.theme === 'dark' ? '#131a16' : '#f7f8f5';
+                document.documentElement.dataset.theme === 'dark' ? '#101b1c' : '#f5f8f7';
         }
     </script>
 </head>

@@ -1,5 +1,6 @@
 import type { Page } from '../types';
 import { useTranslation } from '../i18n';
+import { LogoConcepts } from './LogoConcepts';
 
 type FooterProps = { navigate: (page: Page) => void };
 
@@ -9,7 +10,7 @@ export function Footer({ navigate }: FooterProps) {
         <footer className="site-footer">
             <div className="footer-brand">
                 <a className="brand" href="#/inicio" onClick={() => navigate('inicio')}>
-                    <span className="brand-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 4v14m0 0 7-7m-7 7-7-7M7 22v5h18v-5" /></svg></span>
+                    <LogoConcepts />
                     <span><strong>gas<span>es</span></strong><small>{t('footer.tagline')}</small></span>
                 </a>
                 <p>{t('footer.description')}</p>

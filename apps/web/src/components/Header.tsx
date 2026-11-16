@@ -1,5 +1,6 @@
 import type { Theme } from '../types';
 import { useTranslation } from '../i18n';
+import { LogoConcepts } from './LogoConcepts';
 
 type HeaderProps = {
     theme: Theme;
@@ -12,7 +13,7 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
     return (
         <header className="topbar">
             <a className="brand" href="#/inicio" aria-label={t('navigation.brandHome')}>
-                <span className="brand-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 4v14m0 0 7-7m-7 7-7-7M7 22v5h18v-5" /></svg></span>
+                <LogoConcepts />
                 <span><strong>gas<span>es</span></strong><small>{t('header.observatory')}</small></span>
             </a>
             <div className="header-actions">
