@@ -24,4 +24,4 @@ To stop the development services without deleting database data:
 corepack pnpm dev:down
 ```
 
-The PostgreSQL data is stored in the `postgres_data` Docker volume. Database access libraries and schema tooling remain undecided.
+The PostgreSQL data is stored in the `postgres_data` Docker volume. The worker polls the Geoportal every 30 minutes and stores each successful response in `geoportal_snapshots` as JSONB. The table is created automatically, and the volume retains the snapshots when containers restart.
