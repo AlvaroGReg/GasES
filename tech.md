@@ -18,7 +18,7 @@ A single repository with pnpm workspaces and independent TypeScript applications
 apps/
   web/       React frontend
   api/       NestJS API
-  worker/    Data retrieval, evaluation, and notifications
+  worker/    Geoportal ingestion and persistence
 packages/    Shared code, as needed
 ```
 
@@ -30,12 +30,12 @@ PostgreSQL provides shared persistence. The package structure and database acces
 
 | Component | Responsibility |
 | --- | --- |
-| Frontend | Display the national average, provincial map, and each data point's date; allow users to create and cancel alerts. |
-| NestJS API | Expose prices and subscription management; read from and write to PostgreSQL. |
-| Worker | Query the Geoportal, validate and store data, calculate averages, evaluate eligible alerts, and send emails. It runs independently of the browser and API. |
+| Frontend | Display backend-calculated national and provincial references, historical series, and station observations; allow users to create and cancel alerts. |
+| NestJS API and backend domain services | Read persisted source data, calculate and expose price references and history, manage subscriptions, evaluate alerts, and coordinate notifications. |
+| Worker | Retrieve Geoportal responses, perform ingestion-level checks, and persist the complete response and station observations to PostgreSQL. It handles ingestion only; the backend owns derived calculations and alert behavior. |
 | PostgreSQL | Store the data needed for prices, subscriptions, and notification state. |
 
-Deployment will use Docker and Railway, initially with a development environment only. The worker will be a separate Railway cron service: it runs, completes its job, and exits. Brevo has been selected for transactional email. Account setup, the sender domain, and its DNS configuration will be handled when the project is further along. No message queue is assumed.
+Deployment will use Docker and Railway, initially with a development environment only. The worker will be a separate Railway cron service: it retrieves and persists source data, completes its job, and exits. The API/backend owns derived price data; calculations are not duplicated in the worker or frontend. Brevo has been selected for transactional email. Account setup, the sender domain, and its DNS configuration will be handled when the project is further along. No message queue is assumed.
 
 ## Price retrieval
 
@@ -53,15 +53,16 @@ One query is shared by all users. The API and frontend read persisted data inste
 
 ### Validation and calculation
 
-1. Retrieve a daily snapshot and record the query time and, when available, the source date.
-2. Validate the response and its prices; exclude invalid prices. The specific validation criteria must be defined when implementing the adapter.
-3. Calculate the national arithmetic mean from **all valid prices in that daily query**. Do not combine older snapshots to fill gaps.
-4. Calculate each provincial average as the arithmetic mean of the valid prices received for that province.
-5. Store each average with its observation count, provenance, and dates. A dataset with no valid prices does not produce a new average.
+1. The worker retrieves and persists each successful source response, recording the query time and, when available, the source date. It retains the complete source payload and related station observations.
+2. A price is valid only when it parses as a numeric value greater than zero. Persist invalid or missing parsed prices as SQL `NULL`, while preserving the original value in the raw payload, so they cannot enter an average accidentally.
+3. The backend calculates each provincial average as the arithmetic mean of valid station prices from that province's latest snapshot containing valid prices. The home/map reference for each province is its latest valid provincial average, with its original source and retrieval dates.
+4. The latest national average is calculated from the latest valid provincial averages whose source data date is no more than one calendar month old. Each province contributes its latest available provincial value; older source data is excluded regardless of its later backfill/import time. Provinces are equally weighted regardless of their station counts.
+5. Calculate from unrounded values, then round derived backend values to four decimal places. The frontend formats prices to two decimal places and never uses display-rounded values in calculations.
+6. Expose each reference with its observation count, source snapshot, and source/retrieval dates. A dataset with no valid prices does not produce a new reference.
 
 Station identity is ignored when calculating averages; stations are not specially weighted. If individual observations are stored historically, retain their identity and provenance so changes in the sample can be interpreted. Stations entering or leaving the sample can affect the average even when other stations' prices do not change.
 
-Receiving one or more valid prices for a province updates its average and retrieval date, even if the result has not changed. If none are received, retain the latest provincial average with its original date. A province with no data must be distinguishable from one with an older observation.
+Receiving one or more valid prices for a province updates its average and retrieval date, even if the result has not changed. If none are received, retain the latest provincial average with its original dates. A province with no data must be distinguishable from one with an older observation. The national average excludes a provincial reference once its source data date is more than one calendar month old. These are backend read/calculation semantics; the frontend displays the values and dates supplied by the API without recalculating them.
 
 If a query fails, its response is unexpected, or it contains no valid data, do not replace the last valid value with an empty one or assign it a new date. Do not generate alerts from failed queries or old data. Validate source responses and dates before treating a snapshot as eligible for alerts; the exact staleness threshold remains pending.
 
@@ -139,11 +140,11 @@ On API startup, check which historical source dates are already stored for the c
 
 Historical responses have `Fecha` at `00:00:00`; that value is sufficient to distinguish them from ordinary current-price responses, so no separate historical-origin flag is required solely for that distinction. Backfilled historical records are not new live updates and must not trigger alerts. Keep any already captured live snapshots as separate observations; the historical endpoint does not recreate intraday calls.
 
-Store amounts with suitable decimal precision and document the rounding policy. Compare thresholds using calculated values, not strings formatted for display.
+Store amounts with suitable decimal precision. Round calculated backend values to four decimal places and display prices to two decimal places in the frontend. Compare thresholds using calculated values, not strings formatted for display.
 
 ## API and testing
 
-The API must allow clients to retrieve available references and their dates, obtain data for the map, and create or cancel subscriptions. Routes, formats, and subscription identification and cancellation mechanisms will be defined during API contract design.
+The API must allow clients to retrieve backend-calculated national and provincial references, daily chronological history for 1-year, 6-month, 3-month, and 1-month ranges, recent station observations, and their provenance dates, as well as create or cancel subscriptions. The API owns all average and history calculations; the frontend only formats values and renders map comparisons and chart points. Logical data requirements and calculation semantics are described in the [Frontend SDD](specs/frontend/sdd.md). Concrete routes, response envelopes, and subscription identification and cancellation mechanisms remain to be defined during API contract design.
 
 Keep the Geoportal adapter separate from calculations and alert logic. In particular, test average calculations with partial or invalid data, retention of provincial dates, evaluation based on new references, the weekly email limit, grouping, and source or sending failures. Verify that cron is configured for 23:24 UTC (`24 23 * * *`).
 
@@ -158,8 +159,7 @@ Keep the Geoportal adapter separate from calculations and alert logic. In partic
 - Railway service configuration.
 - Brevo setup: create/configure the account, obtain a sender domain, authenticate it in DNS (SPF, DKIM, and DMARC), store the API key as a secret, and test sending. This will be addressed when the project is further along.
 - PostgreSQL backup and restore system before project launch.
-- Specific source-freshness threshold, retries, recovery, and partial-failure handling.
+- Alert-specific freshness threshold, retries, recovery, and partial-failure handling.
 - API contracts, input validation, email normalization, and subscription management mechanisms.
 - Alert deletion or deactivation and data and history retention policy.
 - PostgreSQL access technology and frontend tooling beyond React/Vite and `d3-geo` for the provincial map.
-- Historical data loading strategy, if historical data is offered; verify the availability and semantics of the official history endpoint.
