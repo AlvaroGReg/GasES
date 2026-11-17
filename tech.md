@@ -47,7 +47,7 @@ The Geoportal indicates that its current response is updated every half hour. Th
 
 ### Scheduling
 
-Railway cron runs the worker daily at **23:00 UTC**, using the expression `0 23 * * *`. UTC remains constant year-round; local time in Spain changes with daylight saving time. Each run must finish before the next scheduled execution.
+Railway cron runs the worker once every 24 hours at **23:24 UTC**, using the expression `24 23 * * *`. This time was selected because the first observed response with changed station prices was retrieved at 23:24 UTC (snapshot 27, compared with snapshot 26). UTC remains constant year-round; local time in Spain changes with daylight saving time. Each run must finish before the next scheduled execution.
 
 One query is shared by all users. The API and frontend read persisted data instead of querying the Geoportal for each request or user.
 
@@ -92,7 +92,7 @@ The frontend is a React application built with Vite. Its page, navigation, theme
 
 ## Initial data model
 
-The table design and PostgreSQL ORM or client have not yet been decided. At minimum, the model must represent:
+The PostgreSQL ORM or client has not yet been decided. At minimum, the model must represent:
 
 | Information | Required data |
 | --- | --- |
@@ -100,7 +100,44 @@ The table design and PostgreSQL ORM or client have not yet been decided. At mini
 | Average | National or provincial scope, price, observation count, source query, and its own retrieval date. |
 | Subscription | Email, province, target price, and a status that allows cancelled subscriptions to be excluded from active alerts. |
 | Notification | Email, send time and outcome, included alerts, and enough information to enforce the seven-day wait. |
-| Individual history, if implemented | Station identity, province, price, source, and dates. |
+| Station observation | Snapshot, station identity, province, source fields, parsed price, and query/source dates. |
+
+### Geoportal snapshot and station-observation tables
+
+Use a relational parent-child model:
+
+- `geoportal_snapshots`: one row per successful source response, with `id`, `retrieved_at` (`timestamptz` for our actual query/import time), `source_date` (the Geoportal's `Fecha` string exactly as returned), `source_url`, and the complete unmodified `payload` (`jsonb`).
+- `station_observations`: one row for each station in a snapshot, related by `snapshot_id` foreign key. Use `(snapshot_id, station_id)` as a unique key when station IDs are present and unique in the response. Capture station attributes on each observation so historical changes to a station's province or address are not overwritten by newer data.
+
+Use English `snake_case` for database and internal field names. Map the source station keys explicitly:
+
+| Source field | Internal field | Type |
+| --- | --- | --- |
+| `C.P.` | `postal_code` | `text` |
+| `Dirección` | `address` | `text` |
+| `Horario` | `opening_hours` | `text` |
+| `IDCCAA` | `autonomous_community_id` | `text` |
+| `IDEESS` | `station_id` | `text` |
+| `IDMunicipio` | `municipality_id` | `text` |
+| `IDProvincia` | `province_id` | `text` |
+| `Latitud` | `latitude` | `numeric` |
+| `Localidad` | `locality` | `text` |
+| `Longitud (WGS84)` | `longitude` | `numeric` |
+| `Margen` | `margin` | `text` |
+| `Municipio` | `municipality` | `text` |
+| `PrecioProducto` | `price` | `numeric` |
+| `Provincia` | `province` | `text` |
+| `Remisión` | `submission` | `text` |
+| `Rótulo` | `brand` | `text` |
+| `Tipo Venta` | `sale_type` | `text` |
+
+Keep identifiers as text, including leading zeroes. Parse decimal commas for relational numeric fields; the raw `payload` retains the exact source strings and keys. Store `source_date` without assigning an assumed timezone; `retrieved_at` is an independent UTC-aware timestamp.
+
+### Initial historical backfill
+
+Before regular live updates, query `EstacionesTerrestresHist/FiltroProducto/{DATE}/7` once per available date starting **2026-01-01**. As of **2026-11-17**, the endpoint accepted dates through **2026-11-16** (320 calendar dates inclusive from January 1); the current day is not available from this historical endpoint yet. Do not create fabricated station observations for dates with an empty or invalid response. Save successful responses in the same snapshot and observation tables, including the raw payload, source `Fecha`, and actual backfill `retrieved_at`.
+
+Historical responses have `Fecha` at `00:00:00`; that value is sufficient to distinguish them from ordinary current-price responses, so no separate historical-origin flag is required solely for that distinction. Backfilled historical records are not new live updates and must not trigger alerts. Keep any already captured live snapshots as separate observations; the historical endpoint does not recreate intraday calls.
 
 Store amounts with suitable decimal precision and document the rounding policy. Compare thresholds using calculated values, not strings formatted for display.
 
@@ -108,7 +145,7 @@ Store amounts with suitable decimal precision and document the rounding policy. 
 
 The API must allow clients to retrieve available references and their dates, obtain data for the map, and create or cancel subscriptions. Routes, formats, and subscription identification and cancellation mechanisms will be defined during API contract design.
 
-Keep the Geoportal adapter separate from calculations and alert logic. In particular, test average calculations with partial or invalid data, retention of provincial dates, evaluation based on new references, the weekly email limit, grouping, and source or sending failures. Verify that cron is configured for 23:00 UTC.
+Keep the Geoportal adapter separate from calculations and alert logic. In particular, test average calculations with partial or invalid data, retention of provincial dates, evaluation based on new references, the weekly email limit, grouping, and source or sending failures. Verify that cron is configured for 23:24 UTC (`24 23 * * *`).
 
 ## Deployment
 

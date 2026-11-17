@@ -8,7 +8,7 @@ Run the worker locally to verify that it can retrieve the current gas oil C pric
 
 This specification covers local development behavior only. The worker periodically requests the current-price endpoint for product `7` and prints the complete JSON response. It does not calculate or persist prices, evaluate alerts, or send notifications.
 
-The existing production direction remains unchanged: the deployed worker will run daily at 23:00 UTC through Railway cron.
+The production worker will query the current-price endpoint once every 24 hours at 23:24 UTC (`24 23 * * *`) through Railway cron. This time was selected because the first observed changed response was retrieved at 23:24 UTC. The local polling behavior in this specification is for development only.
 
 ## Data source
 
@@ -85,5 +85,5 @@ The response is the Geoportal's published dataset for land-based stations, not a
 - Data persistence, database access, or historical storage.
 - Alert evaluation, subscriptions, and email delivery.
 - API or frontend behavior.
-- Production scheduling or changes to the daily 23:00 UTC Railway cron.
+- Production scheduling implementation or changes to the daily 23:24 UTC Railway cron.
 - Source freshness validation beyond checking that the response is successful JSON.

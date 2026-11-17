@@ -16,6 +16,16 @@ The initial source is the Ministry's official REST service associated with the F
 
 The current-price response indicates updates every half hour. This does not mean that every station changes its price that often.
 
+### Stored response and station fields
+
+Retain each complete Geoportal response unchanged in `geoportal_snapshots.payload` (JSONB). The top-level source fields are `Fecha`, `Nota`, `ListaEESSPrecio`, and `ResultadoConsulta`. Each station item has these 17 source fields:
+
+`C.P.`, `Dirección`, `Horario`, `IDCCAA`, `IDEESS`, `IDMunicipio`, `IDProvincia`, `Latitud`, `Localidad`, `Longitud (WGS84)`, `Margen`, `Municipio`, `PrecioProducto`, `Provincia`, `Remisión`, `Rótulo`, `Tipo Venta`.
+
+Store each station item as a related historical observation as well. Database and code-facing names use English `snake_case`, with an explicit mapping to source fields; preserve the original source keys and values in the raw payload. Keep identifiers as text and parse source prices for numeric calculations.
+
+Record both the source `Fecha` exactly as received and our actual query/import time (`retrieved_at`). Historical endpoint responses return `Fecha` at `00:00:00`; this is sufficient to distinguish the initial historical backfill from ordinary current-price queries, so a separate origin flag is not required solely for that distinction.
+
 ### Interpretation and limitations
 
 - The data consists of prices published by land-based stations, not home-delivery quotes. Do not present them as the guaranteed price of filling a tank.
@@ -34,7 +44,8 @@ The current-price response indicates updates every half hour. This does not mean
 - The user provides an email address, province, and target price. A newly updated national or provincial average at or below the target may trigger an alert. The notification includes both available references, their dates, and a reminder to contact the distributor; an old provincial average does not trigger an alert on its own.
 - Send at most one email per user every seven days, grouping alerts that qualify at send time. Do not evaluate that user's alerts during the waiting period; after it ends, new valid data may trigger another email if a condition is still met. Configurable frequency is deferred.
 - Allow subscriptions to be created and cancelled. Cancellation must exclude the alert from active alerts; whether to delete it or retain it as inactive, as well as the data-retention policy, remains undecided.
-- A backend worker will query the source daily at 23:00 UTC through a Railway cron, evaluate conditions, and send emails without relying on open browser sessions. The UTC time remains constant year-round.
+- A backend worker will query the current-price source once every 24 hours at 23:24 UTC through a Railway cron (`24 23 * * *`), evaluate conditions, and send emails without relying on open browser sessions. This time was selected because the first observed changed response was retrieved at 23:24 UTC. The UTC time remains constant year-round.
+- Initially backfill the historical endpoint for each available date from 2026-01-01 onward. On 2026-11-17, the endpoint's latest available date was 2026-11-16; availability can advance as the source publishes data. Keep the original source date and the actual import time, and do not treat historical backfill as newly received data for alert triggering.
 - Store relevant dates: at least the source date when available and the time of our query. Do not trigger alerts from old data or failed queries.
 - If historical data is stored, retain station identity and data provenance so trends can be interpreted even when the sample changes.
 
