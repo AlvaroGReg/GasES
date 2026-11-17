@@ -49,6 +49,11 @@ services:
           path: ./package.json
         - action: rebuild
           path: ./apps/api/package.json
+        - action: sync
+          path: ./packages/database/src
+          target: /workspace/packages/database/src
+        - action: rebuild
+          path: ./packages/database/package.json
 
   web:
     build:
@@ -110,6 +115,11 @@ services:
           path: ./package.json
         - action: rebuild
           path: ./apps/worker/package.json
+        - action: sync
+          path: ./packages/database/src
+          target: /workspace/packages/database/src
+        - action: rebuild
+          path: ./packages/database/package.json
 
 volumes:
   postgres_data:

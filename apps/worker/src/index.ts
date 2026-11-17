@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+import { ensureDatabaseSchema, persistGeoportalDataset } from '@gases/database';
 
 const GEOPORTAL_URL =
   'https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProducto/7';
@@ -74,23 +75,17 @@ async function retrieveDataset(): Promise<void> {
         ? dataset.Fecha
         : null;
 
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS geoportal_snapshots (
-        id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-        retrieved_at TIMESTAMPTZ NOT NULL,
-        source_date TEXT NULL,
-        source_url TEXT NOT NULL,
-        payload JSONB NOT NULL
-      )
-    `);
-
-    await pool.query(
-      `INSERT INTO geoportal_snapshots (retrieved_at, source_date, source_url, payload)
-       VALUES ($1, $2, $3, $4::jsonb)`,
-      [retrievedAt, sourceDate, GEOPORTAL_URL, JSON.stringify(dataset)],
+    const stationCount = await persistGeoportalDataset(
+      pool,
+      retrievedAt,
+      sourceDate,
+      GEOPORTAL_URL,
+      dataset,
     );
 
-    console.info(`Geoportal response stored at ${retrievedAt.toISOString()}.`);
+    console.info(
+      `Geoportal response and ${stationCount} station observations stored at ${retrievedAt.toISOString()}.`,
+    );
   } catch (error) {
     if (shuttingDown && error instanceof Error && error.name === 'AbortError') {
       return;
@@ -107,6 +102,7 @@ async function run(): Promise<void> {
   console.info('Worker development polling started.');
 
   try {
+    await ensureDatabaseSchema(pool);
     while (!shuttingDown) {
       const cycleStartedAt = Date.now();
       await retrieveDataset();
