@@ -13,6 +13,10 @@ export function InformationPage() {
                 <span className="information-number">01</span>
                 <div><h2>{t('information.sourceTitle')}</h2><p>{t('information.sourceDescription')}</p><p>{t('information.processDescription')}</p><a className="text-link" href="https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help" target="_blank" rel="noreferrer">{t('information.apiDocumentation')} <span>↗</span></a></div>
             </section>
+            <section className="information-card map-license-card" aria-label={t('information.mapLicense')}>
+                <span className="information-number">02</span>
+                <div><h2>{t('information.mapLicense')}</h2><p>{t('information.mapCopyright')}</p><a className="text-link" href="https://github.com/codeforgermany/click_that_hood/blob/main/LICENSE" target="_blank" rel="noreferrer">{t('information.mapLicense')} <span>↗</span></a></div>
+            </section>
             <aside className="information-notice"><span>i</span><p>{t('information.notice')}</p></aside>
         </article>
     );

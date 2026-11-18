@@ -13,9 +13,9 @@ Describe the full GasEs frontend: its shared shell, navigation, theme preference
 - Support light and dark themes.
 - Keep all user-facing text in a typed localization catalog. Spanish (`es-ES`) is the only available locale; Galician, Basque, and Catalan are planned.
 - Define the price-data contract the frontend consumes from the API, including derived references, history, and recent station observations.
-- Document which parts remain placeholders until the API implements that contract.
+- Document current API integration status and any remaining placeholders.
 
-Subscription creation and cancellation are part of the frontend product direction, but there is no subscription form or management view in the current frontend.
+Subscription creation and cancellation are part of the product scope but are deferred to the final project phase. Until that phase, the Home page keeps a coming-soon alert callout and has no subscription form or management view.
 
 ## Frontend structure
 
@@ -106,7 +106,7 @@ The Home/map's provincial references are each province's latest valid provincial
 
 Each provincial reference comes from the latest snapshot with valid prices for that province. If a later snapshot has no valid data for a province, the API continues returning its previous reference with its original `sourceDate`, `retrievedAt`, and count; it must not make that reference look newly updated. A province that has never had a valid reference is omitted from the provincial-reference dataset and has no price, date, or count to display. The national reference is calculated from the province references that pass the one-calendar-month source-date freshness rule.
 
-Historical series are daily and contain at most one point per calendar source date. For each province and date, use the latest snapshot for that date containing valid prices for that province; use the historical-backfill snapshot only if no valid current-price snapshot exists for that province and date. Calculate a national history point from the available provincial averages for that date, with one equal-weight contribution per province. Do not carry provincial values forward from earlier dates. Return points in ascending date order and preserve missing dates as gaps (or explicit null-price points); never interpolate. Keep each point's source and retrieval provenance. The selectors request the last year, 6 months, 3 months, or 1 month. Return daily points in all ranges; do not group results into weeks in the initial version. Historical backfill records provide history only and are not new live updates.
+Historical series are daily and contain at most one point per calendar source date. For each province and date, select its latest snapshot containing valid prices, preferring a valid current-price snapshot over a historical-backfill snapshot; use the backfill snapshot only when no valid current-price snapshot exists for that province and date. Calculate a national history point from the provinces with valid data for that date, with one equal-weight contribution per province. Do not carry provincial values forward from earlier dates. Return points in ascending date order; dates with no data remain gaps (or explicit null-price points), never interpolated. Keep each point's source and retrieval provenance. The selectors request the last year, 6 months, 3 months, or 1 month. Return daily points in all ranges; do not group results into weeks in the initial version. Historical backfill records provide history only and are not new live updates. The initial backfill begins at 2026-01-01; actual chart coverage depends on which source dates have valid data.
 
 Recent station observations are valid priced station rows from the latest valid current-price snapshot, not a claim that those stations changed most recently. Each row carries the snapshot's source and retrieval dates. Keep the set bounded for the page and expose more records only through API pagination if that is later required.
 
@@ -116,29 +116,29 @@ For the chart, request API-supplied daily history for the selected scope and per
 
 #### Current data integration status
 
-The national average, provincial averages, history, and latest-observation arrays in `HomePage.tsx` are currently empty placeholders. The API exposes the derived homepage datasets described above, but no homepage API integration is wired into the React app. Therefore the page displays empty states and does not fabricate prices, counts, or dates.
+The Home page consumes the API's latest references, daily history, and recent station-observation routes. It displays explicit loading, error, and empty states and does not fabricate prices, counts, or dates. The province boundary GeoJSON is bundled locally with the frontend rather than fetched at runtime.
 
 The API data routes are:
 
 | Route | Response and behavior |
 | --- | --- |
 | `GET /prices/latest` | `{ national, provinces }`. `national` is the latest fresh national reference with `calculatedAt`, or `null` when no province passes the freshness rule. `provinces` contains the latest valid reference for each province, including stale references and their original dates. |
-| `GET /prices/history?period=1y\|6m\|3m\|1m[&provinceId=CODE]` | An ascending array of daily points. Omitting `provinceId` returns equally weighted national points; supplying a Geoportal province ID returns that province's points. `period` is required. Out-of-range periods or invalid province IDs return HTTP 400. |
+| `GET /prices/history?period=1y\|6m\|3m\|1m[&provinceId=CODE]` | An ascending array of daily points. Omitting `provinceId` returns equally weighted national points; supplying a numeric Geoportal province ID returns that province's points. `period` is required. Unsupported periods or malformed province IDs return HTTP 400; a valid numeric ID with no data returns an empty array. |
 | `GET /prices/observations[?limit=N]` | An array of valid-priced stations from the latest current-price snapshot. `limit` defaults to 20 and must be an integer from 1 to 100. |
 
 The latest and history routes read persisted snapshots and perform average calculations in the API. The station observations route is bounded and does not currently paginate beyond the requested limit.
 
-The map's province geometry is fetched at runtime from the Click That ’Hood Spain provinces GeoJSON asset:
+Bundle the province geometry locally with the frontend so the map does not depend on a third-party runtime request. The initial boundary dataset is the Click That ’Hood Spain provinces GeoJSON asset:
 
 `https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/spain-provinces.geojson`
 
-The page projects the GeoJSON with `d3-geo` and renders SVG province paths. A name-alias mapping in `HomePage.tsx` maps source names to the display/application province names. A failed geometry request is shown as a map loading error.
+The page projects the local GeoJSON with `d3-geo` and renders SVG province paths. A name-alias mapping in `HomePage.tsx` maps source names to the display/application province names. Preserve the dataset's provenance and required attribution in the repository and user-facing map credits. Verify the GeoJSON's own data licensing/provenance separately from the upstream repository's software license before packaging it.
 
 The color calculation is implemented for use when price data is supplied: below the national average is green, above it is red, and equal is white; intensity increases with the price difference and saturates at €0.25/litre. Provincial color contrast fades linearly toward gray over 90 days. Provinces without a reference are rendered in the no-data gray. Since all price arrays are empty, the colored-price behavior is not currently visible with production values.
 
 ### Information (`#/informacion`)
 
-Identify the Fuel Geoportal's public API, published by Spain's Ministry for the Ecological Transition and the Demographic Challenge, as the source of gas oil C prices from land-based stations. Link to the API documentation and state that these prices are not home-delivery quotes.
+Identify the Fuel Geoportal's public API, published by Spain's Ministry for the Ecological Transition and the Demographic Challenge, as the source of gas oil C prices from land-based stations. Link to the API documentation and state that these prices are not home-delivery quotes. Credit the Click That ’Hood province-boundary GeoJSON here and state its copyright and MIT license, linking to the license.
 
 Explain that the backend obtains and stores source responses, derives the displayed averages from valid station prices, and keeps source and retrieval dates distinct. State the current collection schedule only when it matches the deployed configuration. Explain that historical records can be backfilled and are used for trends, not treated as newly received live data. Continue to identify the Geoportal as the source and clarify that station prices are not delivery quotes.
 
@@ -165,6 +165,5 @@ Introduce GasEs as a project to make public gas oil C prices easier to consult a
 
 ## Open questions
 
-- Confirm the historical point selection rule: use each province's latest valid snapshot for a source date and do not carry provincial values forward across dates. National points use the confirmed equal weighting by province.
-- Should the map boundary dataset be bundled locally rather than fetched from the external GeoJSON URL? Confirm the boundary dataset, identifier mapping, and attribution/license requirements.
+- Verify and record the boundary GeoJSON's original data source, applicable license, and attribution requirements before adding it to the repository. The preferred implementation is to bundle the reviewed asset locally.
 - Should the Create alert action become a form or link to a separate subscription flow, and what are the alert management routes?

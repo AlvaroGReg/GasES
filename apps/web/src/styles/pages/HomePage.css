@@ -87,6 +87,27 @@ td { padding: 13px 17px; color: #506055; border-bottom: 1px solid #f0f2ef; font-
 .alert-banner h2 { margin: 5px 0 4px; font: 700 18px 'Manrope', sans-serif; letter-spacing: -.45px; }
 .alert-banner p { max-width: 520px; margin: 0; color: #738178; font-size: 10px; line-height: 1.6; }
 .coming-soon { margin-left: auto; padding: 7px 9px; color: #627c66; background: rgba(255,255,255,.65); border-radius: 20px; font-size: 8px; font-weight: 700; letter-spacing: .6px; white-space: nowrap; }
+.data-status { margin: 9px 0 0; color: var(--text-secondary); font-size: 10px; }
+.data-status.is-error { color: var(--negative); }
+.period-controls { display: flex; flex-wrap: wrap; gap: 5px; padding: 4px; background: var(--surface-subtle); border: 1px solid var(--border); border-radius: 9px; }
+.period-controls button { padding: 7px 10px; color: var(--text-secondary); background: transparent; border: 0; border-radius: 6px; cursor: pointer; font-size: 9px; }
+.period-controls button:hover, .period-controls button:focus-visible { color: var(--text-primary); outline: 2px solid var(--brand-light); outline-offset: 1px; }
+.period-controls button.is-active { color: #fff; background: var(--brand-dark); }
+.history-chart { position: relative; display: block; height: 222px; padding: 19px 24px 31px; }
+.history-chart svg { width: 100%; height: 100%; overflow: visible; }
+.chart-line { stroke: var(--brand-light); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.chart-dot { fill: var(--brand-dark); stroke: var(--surface); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.chart-axis { position: absolute; right: 24px; bottom: 12px; left: 24px; display: flex; justify-content: space-between; color: var(--text-tertiary); font-size: 9px; }
+.history-summary { display: flex; justify-content: space-between; gap: 12px; padding: 9px 18px; color: var(--text-secondary); border-top: 1px solid var(--border-subtle); font-size: 9px; }
+.station-location { display: block; margin-top: 4px; color: var(--text-tertiary); font-size: 9px; }
+.map-license-card { margin-top: 14px; }
+@media (max-width: 650px) {
+  .period-controls { align-self: stretch; justify-content: space-between; }
+  .period-controls button { flex: 1; padding-inline: 5px; }
+  .history-summary { flex-direction: column; }
+  .history-chart { height: 190px; padding-inline: 15px; }
+  .history-section .history-heading { align-items: flex-start; flex-direction: column; }
+}
 
 @media (max-width: 900px) {
   .hero { gap: 30px; }
