@@ -116,7 +116,17 @@ For the chart, request API-supplied daily history for the selected scope and per
 
 #### Current data integration status
 
-The national average, provincial averages, history, and latest-observation arrays in `HomePage.tsx` are currently empty placeholders. The API currently exposes snapshot metadata and the latest raw snapshot, but it does not yet expose the derived homepage datasets described above; no price endpoint or homepage API integration is wired into the React app. Therefore the page displays empty states and does not fabricate prices, counts, or dates. Implement data retrieval after the API adds the derived-data contract.
+The national average, provincial averages, history, and latest-observation arrays in `HomePage.tsx` are currently empty placeholders. The API exposes the derived homepage datasets described above, but no homepage API integration is wired into the React app. Therefore the page displays empty states and does not fabricate prices, counts, or dates.
+
+The API data routes are:
+
+| Route | Response and behavior |
+| --- | --- |
+| `GET /prices/latest` | `{ national, provinces }`. `national` is the latest fresh national reference with `calculatedAt`, or `null` when no province passes the freshness rule. `provinces` contains the latest valid reference for each province, including stale references and their original dates. |
+| `GET /prices/history?period=1y\|6m\|3m\|1m[&provinceId=CODE]` | An ascending array of daily points. Omitting `provinceId` returns equally weighted national points; supplying a Geoportal province ID returns that province's points. `period` is required. Out-of-range periods or invalid province IDs return HTTP 400. |
+| `GET /prices/observations[?limit=N]` | An array of valid-priced stations from the latest current-price snapshot. `limit` defaults to 20 and must be an integer from 1 to 100. |
+
+The latest and history routes read persisted snapshots and perform average calculations in the API. The station observations route is bounded and does not currently paginate beyond the requested limit.
 
 The map's province geometry is fetched at runtime from the Click That ’Hood Spain provinces GeoJSON asset:
 
@@ -155,7 +165,6 @@ Introduce GasEs as a project to make public gas oil C prices easier to consult a
 
 ## Open questions
 
-- Which concrete API routes, response envelopes, and history query parameters will expose the logical datasets specified above? The current snapshot endpoints do not provide the frontend contract.
 - Confirm the historical point selection rule: use each province's latest valid snapshot for a source date and do not carry provincial values forward across dates. National points use the confirmed equal weighting by province.
 - Should the map boundary dataset be bundled locally rather than fetched from the external GeoJSON URL? Confirm the boundary dataset, identifier mapping, and attribution/license requirements.
 - Should the Create alert action become a form or link to a separate subscription flow, and what are the alert management routes?

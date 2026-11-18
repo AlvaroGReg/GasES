@@ -17,7 +17,7 @@ if (!DATABASE_URL) {
 }
 
 function sourceDateAtMidnightToIso(sourceDate: string): string | null {
-  const dayFirst = sourceDate.match(/^(\d{2})[/-](\d{2})[/-](\d{4}) 00:00:00$/);
+  const dayFirst = sourceDate.match(/^(\d{2})[/-](\d{2})[/-](\d{4}) 0{1,2}:00:00$/);
   if (dayFirst) {
     return `${dayFirst[3]}-${dayFirst[2]}-${dayFirst[1]}`;
   }
