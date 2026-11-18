@@ -11,7 +11,7 @@ Describe the full GasEs frontend: its shared shell, navigation, theme preference
 - Allow the user to select a province on an interactive map.
 - Explain the currently known data source and link to the project's repository.
 - Support light and dark themes.
-- Keep all user-facing text in a typed localization catalog. Spanish (`es-ES`) is the only available locale; Galician, Basque, and Catalan are planned.
+- Keep all user-facing text in a typed localization catalog. Spanish (`es-ES`), Galician (`gl-ES`), Basque (`eu-ES`), and Catalan (`ca-ES`) are available.
 - Define the price-data contract the frontend consumes from the API, including derived references, history, and recent station observations.
 - Document current API integration status and any remaining placeholders.
 
@@ -48,7 +48,7 @@ apps/web/src/
 - `pages/` contains the Home, Information, and About page views; each page imports its own stylesheet from `styles/pages/`. The content pages also share `content-page.css`.
 - `styles/global.css` defines global tokens, resets, and the page shell. `styles/theme.css` applies the shared light and dark theme palette.
 - `types.ts` defines the page and theme unions shared between components.
-- `i18n.tsx` defines the available and planned locale identifiers, the Spanish message catalog, the localization provider, and locale-aware formatting configuration. Add a message catalog before exposing a locale as available. The current interface intentionally has no language selector while Spanish is the only available locale.
+- `i18n.tsx` defines the available locale identifiers and message catalogs, the localization provider, and locale-aware formatting configuration. The provider restores the saved locale, otherwise uses browser preferences and falls back to Spanish. The header language selector is a compact flag-only control for Spain, Galicia, the Basque Country, and Catalonia.
 
 ## Navigation and shared shell
 
@@ -63,6 +63,8 @@ The app supports these hash routes:
 The footer provides in-app links. The app also responds to browser back and forward navigation. Selecting an in-app link replaces the page content without a full page reload. The brand link returns to Home. The header's **Create alert** action points to the Home alert banner, which is currently marked as coming soon.
 
 The shared header and footer appear on all three views.
+
+The header places the flag-only language selector beside the theme toggle. Activating it opens the available language flags; each choice has an accessible localized name and the selected locale is saved in local storage.
 
 ## Theme preference
 

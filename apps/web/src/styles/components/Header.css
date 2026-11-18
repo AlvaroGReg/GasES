@@ -4,11 +4,23 @@
 .theme-toggle:hover { background: #fff; border-color: #cbd8cc; }
 .theme-toggle:focus-visible { outline: 2px solid #80aa82; outline-offset: 2px; }
 .theme-toggle svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.language-picker { position: relative; }
+.language-picker > summary { width: 37px; height: 37px; display: grid; place-items: center; box-sizing: border-box; list-style: none; background: rgba(255,255,255,.72); border: 1px solid #e5eae4; border-radius: 9px; cursor: pointer; }
+.language-picker > summary::-webkit-details-marker { display: none; }
+.language-picker > summary:hover { background: #fff; border-color: #cbd8cc; }
+.language-picker > summary:focus-visible { outline: 2px solid #80aa82; outline-offset: 2px; }
+.language-picker svg { width: 20px; height: 14px; display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.12); }
+.language-menu { position: absolute; z-index: 5; top: calc(100% + 7px); right: 0; display: grid; grid-template-columns: repeat(2, 37px); gap: 5px; padding: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(25,43,31,.16); }
+.language-menu button { width: 37px; height: 37px; display: grid; place-items: center; padding: 0; background: transparent; border: 1px solid transparent; border-radius: 7px; cursor: pointer; }
+.language-menu button:hover, .language-menu button[aria-pressed='true'] { background: var(--surface-subtle); border-color: var(--border); }
+.language-menu button:focus-visible { outline: 2px solid #80aa82; outline-offset: 1px; }
 .alert-link { display: inline-flex; align-items: center; gap: 7px; padding: 10px 15px; color: #fff; background: var(--green); border-radius: 8px; font-size: 11px; font-weight: 700; transition: background .2s, transform .2s; }
 .alert-link:hover { background: var(--green-dark); transform: translateY(-1px); }
 .alert-link span { font-size: 17px; line-height: 10px; font-weight: 400; }
 :root[data-theme='dark'] .theme-toggle { color: #d2ddd4; background: #1b251e; border-color: #344238; }
 :root[data-theme='dark'] .theme-toggle:hover { background: #27342a; border-color: #526858; }
+:root[data-theme='dark'] .language-picker > summary { background: #1b251e; border-color: #344238; }
+:root[data-theme='dark'] .language-picker > summary:hover { background: #27342a; border-color: #526858; }
 @media (max-width: 650px) {
   .topbar { height: 70px; }
   .header-actions { gap: 7px; }
