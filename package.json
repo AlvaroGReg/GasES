@@ -7,8 +7,5 @@
     "dev:down": "docker compose down",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck"
-  },
-  "dependencies": {
-    "pnpm": "^12.21.0"
   }
 }
