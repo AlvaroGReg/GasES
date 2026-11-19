@@ -1,0 +1,54 @@
+.map-section { padding-top: 51px; }
+.map-legend { display: flex; align-items: center; gap: 17px; padding-bottom: 3px; color: #758178; font-size: 11px; }
+.map-legend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.map-legend .map-legend-note { max-width: 390px; white-space: normal; line-height: 1.45; }
+.map-legend i { width: 9px; height: 9px; display: inline-block; border: 1px solid rgba(42, 63, 48, .1); border-radius: 3px; }
+.legend-green { background: var(--positive); }.legend-red { background: var(--negative); }.legend-empty { background: #e9efed; }
+.map-card { display: grid; grid-template-columns: minmax(0, 1fr) 284px; overflow: hidden; background: #fff; border: 1px solid #e6ebe5; border-radius: 13px; box-shadow: 0 6px 22px rgba(31, 58, 42, .025); }
+.map-canvas { position: relative; min-height: 410px; display: grid; place-items: center; padding: 12px 20px 21px; background: radial-gradient(ellipse at 50% 56%, #fafbf8 0, #fff 70%); }
+.province-map { width: min(100%, 610px); height: auto; max-height: 410px; overflow: visible; }
+.province-shape { stroke: #fff; stroke-width: .85px; cursor: pointer; transition: fill .2s ease, stroke .15s ease, filter .15s ease; vector-effect: non-scaling-stroke; }
+.province-shape:focus { outline: none; }
+.province-shape:hover, .province-shape:focus-visible { stroke: #476e54; stroke-width: 1.8px; filter: brightness(.96); outline: none; }
+.province-shape.is-selected { stroke: #23563a; stroke-width: 2.5px; filter: drop-shadow(0 1px 2px rgba(30, 70, 43, .24)); }
+.map-loading { display: flex; align-items: center; gap: 10px; color: #818d85; font-size: 13px; }
+.map-spinner { width: 15px; height: 15px; border: 2px solid #e5ebe4; border-top-color: #628c69; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.map-attribution { position: absolute; right: 15px; bottom: 10px; color: #9aa49c; font-size: 10px; }
+.map-attribution a { text-decoration: underline; text-underline-offset: 2px; }
+.province-detail { display: flex; flex-direction: column; align-items: flex-start; padding: 27px 23px 22px; border-left: 1px solid #edf0ec; }
+.detail-kicker { color: #87948b; font-size: 10px; font-weight: 700; letter-spacing: 1.05px; }
+.province-detail h3 { min-height: 27px; margin: 10px 0 0; font: 700 20px 'Manrope', sans-serif; letter-spacing: -.4px; }
+.detail-price { margin-top: 14px; font: 700 26px 'Manrope', sans-serif; letter-spacing: -.6px; }
+.detail-price small { color: #7d8981; font: 500 12px 'DM Sans', sans-serif; letter-spacing: 0; }
+.province-detail dl { width: 100%; margin: 20px 0; }
+.province-detail dl div { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid #eff1ed; }
+.province-detail dt, .province-detail dd { margin: 0; font-size: 11px; }
+.province-detail dt { color: #89958d; }.province-detail dd { color: #48584d; font-weight: 600; text-align: right; }
+.no-data-note { margin-top: 18px; }
+.detail-icon { width: 27px; height: 27px; display: grid; place-items: center; color: #9aa59d; background: #f1f3f0; border-radius: 8px; font-size: 14px; }
+.no-data-note p, .detail-placeholder p { margin: 11px 0 5px; color: #617067; font-size: 13px; line-height: 1.65; }
+.no-data-note small { display: block; color: #9aa39c; font-size: 11px; line-height: 1.6; }
+.detail-placeholder { margin-top: 27px; }
+.pointer-icon { width: 30px; height: 30px; display: grid; place-items: center; color: #739276; background: #eff4ed; border-radius: 9px; font-size: 20px; }
+.clear-selection { width: 100%; margin-top: auto; padding: 11px 0 0; color: var(--green); background: none; border: 0; border-top: 1px solid #edf0ec; cursor: pointer; font-size: 12px; font-weight: 700; text-align: left; }
+.clear-selection span { float: right; font-size: 15px; line-height: 10px; }
+.map-method { margin: 11px 2px 0; color: #939e96; font-size: 11px; line-height: 1.6; }
+@media (max-width: 900px) {
+  .map-card { grid-template-columns: minmax(0, 1fr) 245px; }
+  .map-canvas { min-height: 355px; padding: 10px; }
+  .province-detail { padding: 22px 18px; }
+  .map-legend { gap: 10px; }
+}
+@media (max-width: 650px) {
+  .map-section { padding-top: 38px; }
+  .map-legend { flex-wrap: wrap; gap: 9px 15px; }
+  .map-card { grid-template-columns: 1fr; }
+  .map-canvas { min-height: 280px; padding: 12px 5px 22px; }
+  .province-map { width: 100%; }
+  .province-detail { min-height: 205px; padding: 20px; border-top: 1px solid #edf0ec; border-left: 0; }
+  .detail-placeholder { margin-top: 16px; }
+  .no-data-note { margin-top: 11px; }
+  .clear-selection { margin-top: 17px; }
+  .map-method { font-size: 10px; }
+}

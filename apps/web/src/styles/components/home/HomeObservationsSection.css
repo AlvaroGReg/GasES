@@ -1,0 +1,20 @@
+.observations-section { padding-top: 46px; padding-bottom: 54px; }
+.row-count { padding: 7px 10px; color: #738078; background: #f0f3ef; border: 1px solid #e8ece7; border-radius: 30px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.observations-card { overflow: hidden; background: #fff; border: 1px solid #e7ebe6; border-radius: 12px; }
+.observations-empty { min-height: 104px; display: flex; align-items: center; gap: 13px; padding: 22px 25px; }
+.observation-symbol { width: 34px; height: 34px; display: grid; place-items: center; color: #729077; background: #eff4ed; border-radius: 10px; font-size: 18px; }
+.observations-empty strong { font: 700 14px 'Manrope', sans-serif; }
+.observations-empty p { margin: 5px 0 0; color: #87938a; font-size: 12px; }
+.observations-note { display: flex; align-items: center; gap: 8px; padding: 12px 19px; color: #818e84; background: #fafbf9; border-top: 1px solid #edf0ec; font-size: 11px; }
+.observations-note > span { width: 14px; height: 14px; flex: 0 0 14px; display: grid; place-items: center; color: #718a75; border: 1px solid #bac9ba; border-radius: 50%; font: 600 9px Georgia, serif; }
+.table-scroll { overflow-x: auto; }
+.observations-card table { width: 100%; border-collapse: collapse; text-align: left; }
+.observations-card th { height: 40px; padding: 0 17px; color: #859188; background: #f8faf7; border-bottom: 1px solid #edf0ec; font-size: 10px; letter-spacing: .7px; text-transform: uppercase; white-space: nowrap; }
+.observations-card td { padding: 13px 17px; color: #506055; border-bottom: 1px solid #f0f2ef; font-size: 12px; }
+.station-location { display: block; margin-top: 4px; color: var(--text-tertiary); font-size: 11px; }
+@media (max-width: 650px) {
+  .observations-section { padding-top: 38px; }
+  .observations-empty { align-items: flex-start; padding: 20px 16px; }
+  .observations-empty p { line-height: 1.6; }
+  .observations-note { align-items: flex-start; padding: 11px 13px; line-height: 1.5; }
+}

@@ -1,4 +1,4 @@
-import type { Page } from '../types';
+import type { Page } from '../types/app';
 import { useTranslation } from '../i18n';
 import { LogoConcepts } from './LogoConcepts';
 import '../styles/components/Footer.css';

@@ -1,0 +1,32 @@
+.history-section { padding-top: 47px; }
+.history-heading { margin-bottom: 15px; }
+.history-heading h2 { font-size: 23px; }
+.period-pill { padding: 7px 10px; color: #738078; background: #f0f3ef; border: 1px solid #e8ece7; border-radius: 30px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.history-card { overflow: hidden; background: #fff; border: 1px solid #e7ebe6; border-radius: 12px; }
+.history-empty { min-height: 222px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px; text-align: center; }
+.empty-chart-icon { width: 40px; height: 40px; display: grid; place-items: center; margin-bottom: 11px; color: #5d8968; background: #eef4ec; border-radius: 12px; }
+.empty-chart-icon svg { width: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.history-empty strong { font: 700 14px 'Manrope', sans-serif; }
+.history-empty p { max-width: 425px; margin: 6px 0 3px; color: #7c8980; font-size: 12px; line-height: 1.65; }
+.history-empty > span { color: #a0a9a2; font-size: 11px; }
+.history-chart { position: relative; display: block; height: 222px; padding: 19px 24px 31px; }
+.history-chart svg { width: 100%; height: 100%; overflow: visible; }
+.chart-line { stroke: var(--brand-light); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.chart-dot { fill: var(--brand-dark); stroke: var(--surface); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.chart-axis { position: absolute; right: 24px; bottom: 12px; left: 24px; display: flex; justify-content: space-between; color: var(--text-tertiary); font-size: 11px; }
+.history-summary { display: flex; justify-content: space-between; gap: 12px; padding: 9px 18px; color: var(--text-secondary); border-top: 1px solid var(--border-subtle); font-size: 11px; }
+.period-controls { display: flex; flex-wrap: wrap; gap: 5px; padding: 4px; background: var(--surface-subtle); border: 1px solid var(--border); border-radius: 9px; }
+.period-controls button { padding: 7px 10px; color: var(--text-secondary); background: transparent; border: 0; border-radius: 6px; cursor: pointer; font-size: 11px; }
+.period-controls button:hover, .period-controls button:focus-visible { color: var(--text-primary); outline: 2px solid var(--brand-light); outline-offset: 1px; }
+.period-controls button.is-active { color: #fff; background: var(--brand-dark); }
+@media (max-width: 650px) {
+  .history-section { padding-top: 38px; }
+  .history-heading { flex-direction: row; align-items: end; }
+  .history-summary { flex-direction: column; }
+  .history-chart { height: 190px; padding-inline: 15px; }
+  .history-empty { min-height: 210px; padding: 23px 19px; }
+  .history-empty p { font-size: 11px; }
+  .period-controls { align-self: stretch; justify-content: space-between; }
+  .period-controls button { flex: 1; padding-inline: 5px; }
+  .history-section .history-heading { align-items: flex-start; flex-direction: column; }
+}

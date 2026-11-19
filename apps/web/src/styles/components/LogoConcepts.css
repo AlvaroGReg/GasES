@@ -15,8 +15,8 @@
 .footer-brand .brand-concept svg { width: 26px; height: 26px; }
 .footer-brand .brand-icon { width: 31px; height: 31px; border-radius: 9px; }
 .footer-brand .brand-icon svg { width: 19px; }
-.footer-brand .brand strong { font-size: 16px; }
-.footer-brand .brand small { font-size: 7px; }
+.footer-brand .brand strong { font-size: 17px; }
+.footer-brand .brand small { font-size: 8px; }
 :root[data-theme='dark'] .concept-drop { fill: var(--brand-light); }
 @media (max-width: 650px) {
   .brand { gap: 6px; }

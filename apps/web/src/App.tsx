@@ -4,7 +4,7 @@ import { HomePage } from './pages/HomePage';
 import { InformationPage } from './pages/InformationPage';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
-import type { Page, Theme } from './types';
+import type { Page, Theme } from './types/app';
 
 const THEME_STORAGE_KEY = 'gases-theme';
 

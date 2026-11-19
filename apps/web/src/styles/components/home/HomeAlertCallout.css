@@ -1,0 +1,13 @@
+.alert-banner { position: relative; display: flex; align-items: center; gap: 20px; overflow: hidden; padding: 23px 27px; background: #eaf1e8; border: 1px solid #dce8da; border-radius: 12px; }
+.alert-art { width: 43px; height: 43px; flex: 0 0 43px; display: grid; place-items: center; color: #fff; background: var(--green); border-radius: 12px; font-size: 25px; }
+.alert-banner h2 { margin: 5px 0 4px; font: 700 20px 'Manrope', sans-serif; letter-spacing: -.45px; }
+.alert-banner p { max-width: 520px; margin: 0; color: #738178; font-size: 12px; line-height: 1.6; }
+.coming-soon { margin-left: auto; padding: 7px 9px; color: #627c66; background: rgba(255,255,255,.65); border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .6px; white-space: nowrap; }
+@media (max-width: 650px) {
+  .alert-banner { align-items: flex-start; gap: 13px; padding: 20px 16px; }
+  .alert-art { width: 36px; height: 36px; flex-basis: 36px; border-radius: 10px; }
+  .alert-banner .eyebrow { font-size: 10px; }
+  .alert-banner h2 { font-size: 18px; }
+  .alert-banner p { font-size: 11px; }
+  .coming-soon { position: absolute; right: 13px; bottom: 12px; font-size: 9px; }
+}

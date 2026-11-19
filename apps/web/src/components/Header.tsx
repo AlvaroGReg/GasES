@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react';
-import type { Theme } from '../types';
+import type { Theme } from '../types/app';
 import { AVAILABLE_LOCALES, useTranslation, type Locale } from '../i18n';
 import { LogoConcepts } from './LogoConcepts';
 import '../styles/components/Header.css';
