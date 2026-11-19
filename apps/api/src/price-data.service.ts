@@ -11,12 +11,20 @@ const SNAPSHOT_DATES = `
   SELECT snapshot.id, snapshot.source_date, snapshot.retrieved_at,
          CASE
            WHEN snapshot.source_date ~ '^\\d{2}[-/]\\d{2}[-/]\\d{4}'
-             THEN to_date(replace(substring(snapshot.source_date FROM 1 FOR 10), '-', '/'), 'DD/MM/YYYY')
+             AND pg_input_is_valid(
+               substring(snapshot.source_date FROM 7 FOR 4) || '-' ||
+               substring(snapshot.source_date FROM 4 FOR 2) || '-' ||
+               substring(snapshot.source_date FROM 1 FOR 2), 'date')
+             THEN (substring(snapshot.source_date FROM 7 FOR 4) || '-' ||
+                   substring(snapshot.source_date FROM 4 FOR 2) || '-' ||
+                   substring(snapshot.source_date FROM 1 FOR 2))::date
            WHEN snapshot.source_date ~ '^\\d{4}-\\d{2}-\\d{2}'
-             THEN to_date(substring(snapshot.source_date FROM 1 FOR 10), 'YYYY-MM-DD')
+             AND pg_input_is_valid(substring(snapshot.source_date FROM 1 FOR 10), 'date')
+             THEN substring(snapshot.source_date FROM 1 FOR 10)::date
            ELSE NULL
          END AS data_date
   FROM geoportal_snapshots AS snapshot
+  WHERE snapshot.payload->>'ResultadoConsulta' = 'OK'
 `;
 
 const PROVINCE_SNAPSHOTS = `
@@ -220,10 +228,12 @@ export class PriceDataService implements OnModuleDestroy {
     }
 
     const result = await this.pool.query(
-      `WITH current_snapshot AS (
+       `WITH snapshot_dates AS (${SNAPSHOT_DATES}),
+       current_snapshot AS (
          SELECT snapshot.id, snapshot.source_date, snapshot.retrieved_at
-         FROM geoportal_snapshots AS snapshot
-         WHERE snapshot.source_date !~ '00:00:00$'
+         FROM snapshot_dates AS snapshot
+         WHERE snapshot.data_date IS NOT NULL
+           AND snapshot.source_date !~ '00:00:00$'
            AND EXISTS (
              SELECT 1 FROM station_observations AS valid_observation
              WHERE valid_observation.snapshot_id = snapshot.id

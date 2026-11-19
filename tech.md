@@ -150,15 +150,13 @@ Keep the Geoportal adapter separate from calculations and alert logic. In partic
 
 ## Deployment
 
-- Railway will initially host only the development environment. The specific services and Dockerfiles will be defined when implementing the monorepo.
-- Start with basic PostgreSQL and persistent storage. Decide and prepare the backup system before the project starts.
+- Railway will initially host only the development environment, with separate web, API, worker, and PostgreSQL services. See the README for their deployment configuration.
+- Use basic PostgreSQL with persistent storage and no backups for now. Historical source data can be queried again, but live snapshots and original retrieval times may be lost. Revisit backups before storing subscriptions or other non-recoverable data.
 - Railway cron starts the worker; the worker does not need a public domain to perform its job. Alert sending will be integrated with Brevo when the pending email configuration is addressed.
 
 ## Pending decisions
 
-- Railway service configuration.
 - Brevo setup: create/configure the account, obtain a sender domain, authenticate it in DNS (SPF, DKIM, and DMARC), store the API key as a secret, and test sending. This will be addressed when the project is further along.
-- PostgreSQL backup and restore system before project launch.
 - Alert-specific freshness threshold, retries, recovery, and partial-failure handling.
 - API contracts, input validation, email normalization, and subscription management mechanisms.
 - Alert deletion or deactivation and data and history retention policy.

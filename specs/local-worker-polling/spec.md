@@ -1,5 +1,7 @@
 # Local Worker Polling
 
+> Historical specification: local periodic polling has been removed. The worker now performs one query per start.
+
 ## Purpose
 
 Run the worker locally to verify that it can retrieve the current gas oil C price dataset from the Ministry's Fuel Geoportal and display the received response in the console. This is the first implementation increment for the worker.

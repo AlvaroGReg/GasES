@@ -1,5 +1,7 @@
 # Worker Snapshot Persistence — Basic Software Design Description
 
+> Historical specification: the local 30-minute polling experiment has ended. The worker now performs one query per start.
+
 ## Purpose
 
 Define the smallest design needed for the worker to persist each successful current-price query to PostgreSQL during a local data-observation run. The captured snapshots will be reviewed before deciding whether to continue or change the approach.

@@ -1,21 +1,20 @@
 import { Pool } from 'pg';
 import { ensureDatabaseSchema, persistGeoportalDataset } from '@gases/database';
+import { ingestDataset } from './geoportal';
 
 const GEOPORTAL_URL =
   'https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProducto/7';
-const POLLING_INTERVAL_MS = 30 * 60_000;
+const REQUEST_TIMEOUT_MS = 30_000;
 const DATABASE_URL = process.env.DATABASE_URL;
 
 if (!DATABASE_URL) {
   throw new Error('DATABASE_URL must be set to persist Geoportal snapshots.');
 }
 
-const pool = new Pool({ connectionString: DATABASE_URL });
+const pool = new Pool({ connectionString: DATABASE_URL, connectionTimeoutMillis: 30_000 });
 
 let shuttingDown = false;
 let activeRequest: AbortController | undefined;
-let pendingTimer: ReturnType<typeof setTimeout> | undefined;
-let resolvePendingTimer: (() => void) | undefined;
 
 function requestShutdown(): void {
   if (shuttingDown) {
@@ -26,92 +25,34 @@ function requestShutdown(): void {
   console.info('Received a termination signal; stopping the worker.');
   activeRequest?.abort();
 
-  if (pendingTimer) {
-    clearTimeout(pendingTimer);
-    pendingTimer = undefined;
-    resolvePendingTimer?.();
-    resolvePendingTimer = undefined;
-  }
-}
-
-function waitForNextCycle(delayMs: number): Promise<void> {
-  if (shuttingDown || delayMs <= 0) {
-    return Promise.resolve();
-  }
-
-  return new Promise((resolve) => {
-    resolvePendingTimer = resolve;
-    pendingTimer = setTimeout(() => {
-      pendingTimer = undefined;
-      resolvePendingTimer = undefined;
-      resolve();
-    }, delayMs);
-  });
 }
 
 async function retrieveDataset(): Promise<void> {
-  const retrievedAt = new Date();
   activeRequest = new AbortController();
 
   try {
-    const response = await fetch(GEOPORTAL_URL, {
-      signal: activeRequest.signal,
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Geoportal returned HTTP ${response.status} ${response.statusText}`.trim(),
-      );
-    }
-
-    const dataset: unknown = await response.json();
-    if (shuttingDown) {
-      return;
-    }
-
-    const sourceDate =
-      typeof dataset === 'object' && dataset !== null && 'Fecha' in dataset &&
-      typeof dataset.Fecha === 'string'
-        ? dataset.Fecha
-        : null;
-
-    const stationCount = await persistGeoportalDataset(
-      pool,
-      retrievedAt,
-      sourceDate,
+    const { retrievedAt, stationCount } = await ingestDataset(
       GEOPORTAL_URL,
-      dataset,
+      AbortSignal.any([activeRequest.signal, AbortSignal.timeout(REQUEST_TIMEOUT_MS)]),
+      (retrievedAt, sourceDate, dataset) =>
+        persistGeoportalDataset(pool, retrievedAt, sourceDate, GEOPORTAL_URL, dataset),
     );
 
     console.info(
       `Geoportal response and ${stationCount} station observations stored at ${retrievedAt.toISOString()}.`,
     );
-  } catch (error) {
-    if (shuttingDown && error instanceof Error && error.name === 'AbortError') {
-      return;
-    }
-
-    const detail = error instanceof Error ? error.message : String(error);
-    console.error(`Geoportal snapshot failed at ${retrievedAt.toISOString()}: ${detail}`);
   } finally {
     activeRequest = undefined;
   }
 }
 
 async function run(): Promise<void> {
-  console.info('Worker development polling started.');
+  console.info('Worker run started.');
 
   try {
     await ensureDatabaseSchema(pool);
-    while (!shuttingDown) {
-      const cycleStartedAt = Date.now();
+    if (!shuttingDown) {
       await retrieveDataset();
-
-      const delayMs = Math.max(
-        0,
-        cycleStartedAt + POLLING_INTERVAL_MS - Date.now(),
-      );
-      await waitForNextCycle(delayMs);
     }
   } finally {
     await pool.end();
