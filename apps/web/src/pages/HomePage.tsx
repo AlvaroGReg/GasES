@@ -202,8 +202,8 @@ export function HomePage({ theme }: HomePageProps) {
     const selectedProvince = selectedProvinceName
         ? { id: selectedProvinceId, name: selectedProvinceName }
         : geoJson?.features
-        .map((feature) => ({ id: provinceIdsByName.get(normalizeProvinceName(getProvinceName(feature))), name: getProvinceName(feature) }))
-        .find((province) => province.id === selectedProvinceId);
+            .map((feature) => ({ id: provinceIdsByName.get(normalizeProvinceName(getProvinceName(feature))), name: getProvinceName(feature) }))
+            .find((province) => province.id === selectedProvinceId);
     const selectedAverage = selectedProvinceId ? provincesById.get(selectedProvinceId) : undefined;
     const nationalAverage = latest?.national ?? null;
     const chartTitle = selectedProvince ? t('home.provinceHistory', { province: selectedProvince.name }) : t('home.nationalHistory');
@@ -322,7 +322,7 @@ export function HomePage({ theme }: HomePageProps) {
             <section className="map-section" aria-labelledby="map-title">
                 <div className="section-heading">
                     <div><div className="eyebrow">{t('home.mapEyebrow')}</div><h2 id="map-title">{t('home.mapTitle')}</h2><p>{t('home.mapIntro')}</p></div>
-                    <div className="map-legend"><span><i className="legend-green" /> {t('home.belowAverage')}</span><span><i className="legend-red" /> {t('home.aboveAverage')}</span><span><i className="legend-empty" /> {t('home.noData')}</span></div>
+                    <div className="map-legend"><span><i className="legend-green" /> {t('home.belowAverage')}</span><span><i className="legend-red" /> {t('home.aboveAverage')}</span><span><i className="legend-empty" /> {t('home.noData')}</span><span className="map-legend-note">{t('home.mapFreshnessNotice')}</span></div>
                 </div>
                 <div className="map-card">
                     <div className="map-canvas">

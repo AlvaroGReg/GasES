@@ -58,52 +58,94 @@ export class PriceDataService implements OnModuleDestroy {
   }
 
   async latest() {
-    const provinces = await this.pool.query(
+    const result = await this.pool.query<{
+      national: {
+        price: number;
+        provinceCount: number;
+        stationObservationCount: number;
+        dataDateFrom: string;
+        dataDateTo: string;
+        retrievedAtFrom: string;
+        retrievedAtTo: string;
+      } | null;
+      provinces: Array<{
+        provinceId: string;
+        province: string | null;
+        price: number;
+        observationCount: number;
+        dataDate: string;
+        sourceDate: string | null;
+        retrievedAt: string;
+      }>;
+    }>(
       `WITH province_snapshots AS (${PROVINCE_SNAPSHOTS}),
        latest_provinces AS (
          SELECT DISTINCT ON (province_id) province_id, province, price, observation_count,
                 data_date, source_date, retrieved_at, historical_snapshot
          FROM province_snapshots
-         ORDER BY province_id, data_date DESC, historical_snapshot ASC, retrieved_at DESC, snapshot_id DESC
-       )
-       SELECT province_id AS "provinceId", province, ROUND(price, 4) AS price,
-              observation_count AS "observationCount", data_date::TEXT AS "dataDate",
-              source_date AS "sourceDate", retrieved_at AS "retrievedAt"
-       FROM latest_provinces
-       ORDER BY province, province_id`,
-    );
-
-    const national = await this.pool.query(
-      `WITH province_snapshots AS (${PROVINCE_SNAPSHOTS}),
-       latest_provinces AS (
-         SELECT DISTINCT ON (province_id) province_id, price, observation_count,
-                data_date, retrieved_at, historical_snapshot
-         FROM province_snapshots
-         ORDER BY province_id, data_date DESC, historical_snapshot ASC, retrieved_at DESC, snapshot_id DESC
+         ORDER BY province_id, data_date DESC, historical_snapshot ASC,
+                  retrieved_at DESC, snapshot_id DESC
        ),
        fresh_provinces AS (
          SELECT * FROM latest_provinces
          WHERE data_date >= CURRENT_DATE - INTERVAL '1 month'
-           AND data_date <= CURRENT_DATE
+            AND data_date <= CURRENT_DATE
+       ),
+       national_average AS (
+         SELECT COUNT(*)::INTEGER AS province_count,
+                AVG(price) AS price,
+                COALESCE(SUM(observation_count), 0)::INTEGER AS station_observation_count,
+                MIN(data_date) AS data_date_from,
+                MAX(data_date) AS data_date_to,
+                MIN(retrieved_at) AS retrieved_at_from,
+                MAX(retrieved_at) AS retrieved_at_to
+         FROM fresh_provinces
        )
-       SELECT CASE WHEN COUNT(*) = 0 THEN NULL ELSE ROUND(AVG(price), 4) END AS price,
-              COUNT(*)::INTEGER AS "provinceCount",
-              COALESCE(SUM(observation_count), 0)::INTEGER AS "stationObservationCount",
-              MIN(data_date)::TEXT AS "dataDateFrom", MAX(data_date)::TEXT AS "dataDateTo",
-              MIN(retrieved_at) AS "retrievedAtFrom", MAX(retrieved_at) AS "retrievedAtTo"
-       FROM fresh_provinces`,
+       SELECT
+         CASE WHEN national_average.province_count = 0 THEN NULL
+              ELSE jsonb_build_object(
+                'price', ROUND(national_average.price, 4),
+                'provinceCount', national_average.province_count,
+                'stationObservationCount', national_average.station_observation_count,
+                'dataDateFrom', national_average.data_date_from::TEXT,
+                'dataDateTo', national_average.data_date_to::TEXT,
+                'retrievedAtFrom', to_char(
+                  national_average.retrieved_at_from AT TIME ZONE 'UTC',
+                  'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'
+                ),
+                'retrievedAtTo', to_char(
+                  national_average.retrieved_at_to AT TIME ZONE 'UTC',
+                  'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'
+                )
+              )
+         END AS national,
+         COALESCE(
+           (SELECT jsonb_agg(
+              jsonb_build_object(
+                'provinceId', province_id,
+                'province', province,
+                'price', ROUND(price, 4),
+                'observationCount', observation_count,
+                'dataDate', data_date::TEXT,
+                'sourceDate', source_date,
+                'retrievedAt', to_char(
+                  retrieved_at AT TIME ZONE 'UTC',
+                  'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'
+                )
+              )
+              ORDER BY province, province_id
+            )
+            FROM latest_provinces),
+           '[]'::JSONB
+         ) AS provinces
+       FROM national_average`,
     );
 
     const calculatedAt = new Date().toISOString();
-    const nationalReference = numericFields(
-      national.rows[0],
-      ['price', 'provinceCount', 'stationObservationCount'],
-    );
+    const { national, provinces } = result.rows[0];
     return {
-      national: nationalReference.price === null
-        ? null
-        : { ...nationalReference, calculatedAt },
-      provinces: provinces.rows.map((row) => numericFields(row, ['price', 'observationCount'])),
+      national: national === null ? null : { ...national, calculatedAt },
+      provinces,
     };
   }
 

@@ -28,6 +28,6 @@ The PostgreSQL data is stored in the `postgres_data` Docker volume. On startup, 
 
 - `GET /snapshots?limit=100` for recent snapshot metadata.
 - `GET /snapshots/latest` for the most recent full response with normalized station observations.
-- `GET /prices/latest` for current national and provincial references.
+- `GET /prices/latest` for provincial averages from each province's latest valid snapshot and a national average that includes only provinces with a snapshot from the last calendar month.
 - `GET /prices/history?period=1y` for national history. Supported periods are `1y`, `6m`, `3m`, and `1m`; add `provinceId=<Geoportal ID>` for a provincial series.
 - `GET /prices/observations?limit=20` for a bounded list of station prices from the latest current-price snapshot (limit 1–100).
