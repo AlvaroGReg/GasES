@@ -51,5 +51,4 @@ export type HomeObservationsSectionProps = {
     dataLoading: boolean;
     euro: Intl.NumberFormat;
     formatDate: (value: string) => string;
-    formatDateTime: (value: string) => string;
 };

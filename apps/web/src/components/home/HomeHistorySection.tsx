@@ -11,7 +11,6 @@ export function HomeHistorySection({
     history,
     period,
     onPeriodChange,
-    selectedProvince,
     loading,
     error,
     euro,
@@ -36,10 +35,8 @@ export function HomeHistorySection({
         }));
     }, [history]);
 
-    const area = selectedProvince?.name ?? t('home.nationalArea');
-    const title = selectedProvince
-        ? t('home.provinceHistory', { province: selectedProvince.name })
-        : t('home.nationalHistory');
+    const area = t('home.nationalArea');
+    const title = t('home.nationalHistory');
 
     return (
         <section className="history-section" id="historial" aria-labelledby="history-title">
@@ -61,9 +58,7 @@ export function HomeHistorySection({
                                         return <g key={point.date}>
                                             {previousEntry && <line x1={previousEntry.x} y1={previousEntry.y} x2={x} y2={y} className="chart-line" />}
                                             <circle cx={x} cy={y} r="3" className="chart-dot">
-                                                <title>{'sourceDate' in point
-                                                    ? `${formatDate(point.date)} · ${euro.format(point.price)} · ${t('home.sourceDate')}: ${point.sourceDate} · ${t('home.retrieved')}: ${formatDateTime(point.retrievedAt)}`
-                                                    : `${formatDate(point.date)} · ${euro.format(point.price)} · ${t('home.sourceDateRange')}: ${formatDate(point.dataDateFrom)} – ${formatDate(point.dataDateTo)} · ${t('home.retrievedRange')}: ${formatDateTime(point.retrievedAtFrom)} – ${formatDateTime(point.retrievedAtTo)}`}</title>
+                                                <title>{`${formatDate(point.date)} · ${euro.format(point.price)} · ${t('home.sourceDateRange')}: ${formatDate(point.dataDateFrom)} – ${formatDate(point.dataDateTo)} · ${t('home.retrievedRange')}: ${formatDateTime(point.retrievedAtFrom)} – ${formatDateTime(point.retrievedAtTo)}`}</title>
                                             </circle>
                                         </g>;
                                     })}
@@ -71,7 +66,7 @@ export function HomeHistorySection({
                                 <div className="chart-axis"><span>{formatDate(history[0].date)}</span><span>{formatDate(history[history.length - 1].date)}</span></div>
                             </div>
                             <div className="history-summary"><span>{t('home.historyPointCount', { count: history.length })}</span><span>{t('home.historyHoverHelp')}</span></div>
-                        </> : <div className="history-empty"><div className="empty-chart-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 25V7m0 18h24M8 20l6-7 5 4 8-9" /></svg></div><strong>{t('home.historyEmptyTitle')}</strong><p>{t('home.historyEmpty', { area: selectedProvince ? t('home.provinceArea', { province: selectedProvince.name }) : t('home.nationalArea') })}</p><span>{t('home.historyGaps')}</span></div>}
+                        </> : <div className="history-empty"><div className="empty-chart-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 25V7m0 18h24M8 20l6-7 5 4 8-9" /></svg></div><strong>{t('home.historyEmptyTitle')}</strong><p>{t('home.historyEmpty', { area })}</p><span>{t('home.historyGaps')}</span></div>}
             </div>
         </section>
     );

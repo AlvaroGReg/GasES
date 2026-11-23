@@ -49,12 +49,6 @@ export function HomePage({ theme }: HomePageProps) {
     const [observationsError, setObservationsError] = useState(false);
 
     useEffect(() => {
-        if (selectedProvinceName && !selectedProvinceId) {
-            setHistory([]);
-            setHistoryLoading(false);
-            setHistoryError(false);
-            return;
-        }
         const controller = new AbortController();
         fetch('/data/spain-provinces.geojson', { signal: controller.signal })
             .then((response) => {
@@ -94,10 +88,9 @@ export function HomePage({ theme }: HomePageProps) {
 
     useEffect(() => {
         const controller = new AbortController();
-        const provinceQuery = selectedProvinceId ? `&provinceId=${encodeURIComponent(selectedProvinceId)}` : '';
         setHistoryLoading(true);
         setHistoryError(false);
-        fetchJson<HistoryPoint[]>(`/prices/history?period=${period}${provinceQuery}`, controller.signal)
+        fetchJson<HistoryPoint[]>(`/prices/history?period=${period}`, controller.signal)
             .then(setHistory)
             .catch((error: unknown) => {
                 if (error instanceof Error && error.name !== 'AbortError') {
@@ -109,7 +102,7 @@ export function HomePage({ theme }: HomePageProps) {
                 if (!controller.signal.aborted) setHistoryLoading(false);
             });
         return () => controller.abort();
-    }, [period, selectedProvinceId, selectedProvinceName]);
+    }, [period]);
 
     const provinces = latest?.provinces ?? [];
     const provincesById = useMemo(() => new Map(provinces.map((province) => [province.provinceId, province])), [provinces]);
@@ -119,9 +112,11 @@ export function HomePage({ theme }: HomePageProps) {
     );
     const selectedProvince = selectedProvinceName
         ? { id: selectedProvinceId, name: selectedProvinceName }
-        : geoJson?.features
+        : selectedProvinceId
+            ? geoJson?.features
             .map((feature) => ({ id: provinceIdsByName.get(normalizeProvinceName(getProvinceName(feature))) ?? null, name: getProvinceName(feature) }))
-            .find((province) => province.id === selectedProvinceId);
+                .find((province) => province.id === selectedProvinceId)
+            : undefined;
     const selectedAverage = selectedProvinceId ? provincesById.get(selectedProvinceId) : undefined;
     const nationalAverage = latest?.national ?? null;
     return (
@@ -134,6 +129,27 @@ export function HomePage({ theme }: HomePageProps) {
                 dataLoading={dataLoading}
                 dataError={dataError}
             />
+
+            <HomeHistorySection
+                history={history}
+                period={period}
+                onPeriodChange={setPeriod}
+                loading={historyLoading}
+                error={historyError}
+                euro={euro}
+                formatDate={formatDate}
+                formatDateTime={formatDateTime}
+            />
+
+            <HomeObservationsSection
+                observations={observations}
+                observationsError={observationsError}
+                dataLoading={dataLoading}
+                euro={euro}
+                formatDate={formatDate}
+            />
+
+            <HomeAlertCallout />
 
             <HomeMapSection
                 geoJson={geoJson}
@@ -156,29 +172,6 @@ export function HomePage({ theme }: HomePageProps) {
                     setSelectedProvinceId(null);
                 }}
             />
-
-            <HomeHistorySection
-                history={history}
-                period={period}
-                onPeriodChange={setPeriod}
-                selectedProvince={selectedProvince}
-                loading={historyLoading}
-                error={historyError}
-                euro={euro}
-                formatDate={formatDate}
-                formatDateTime={formatDateTime}
-            />
-
-            <HomeObservationsSection
-                observations={observations}
-                observationsError={observationsError}
-                dataLoading={dataLoading}
-                euro={euro}
-                formatDate={formatDate}
-                formatDateTime={formatDateTime}
-            />
-
-            <HomeAlertCallout />
         </>
     );
 }

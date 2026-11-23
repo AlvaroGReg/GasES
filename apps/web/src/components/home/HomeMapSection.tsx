@@ -125,18 +125,29 @@ export function HomeMapSection({
                     <div className="map-attribution">{t('home.mapAttribution')} <a href="https://github.com/codeforgermany/click_that_hood" target="_blank" rel="noreferrer">Click That ’Hood</a></div>
                 </div>
                 <aside className="province-detail" aria-live="polite">
-                    <div className="detail-kicker">{selectedProvince ? t('home.selectedProvince') : t('home.provincialDetail')}</div>
-                    <h3>{selectedProvince?.name ?? t('home.selectProvince')}</h3>
-                    {selectedProvince ? (
-                        selectedAverage ? <>
+                    {selectedProvince ? <>
+                        <div className="detail-kicker">{t('home.selectedProvince')}</div>
+                        <h3>{selectedProvince.name}</h3>
+                        {selectedAverage ? <>
                             <strong className="detail-price">{euro.format(selectedAverage.price)}<small> {t('home.perLitre')}</small></strong>
                             <dl>
                                 <div><dt>{t('home.sourceDate')}</dt><dd>{formatDate(selectedAverage.sourceDate)}</dd></div>
                                 <div><dt>{t('home.retrieved')}</dt><dd>{formatDateTime(selectedAverage.retrievedAt)}</dd></div>
                                 <div><dt>{t('home.observations')}</dt><dd>{selectedAverage.observationCount}</dd></div>
                             </dl>
-                        </> : <div className="no-data-note"><span className="detail-icon">—</span><p>{t('home.provinceNoData')}</p><small>{t('home.noPriceDate')}</small></div>
-                    ) : <div className="detail-placeholder"><span className="pointer-icon">⌖</span><p>{t('home.provincePrompt')}</p></div>}
+                        </> : <div className="no-data-note"><span className="detail-icon">—</span><p>{t('home.provinceNoData')}</p><small>{t('home.noPriceDate')}</small></div>}
+                    </> : <>
+                        <div className="detail-kicker">{t('home.nationalAverage')}</div>
+                        <h3>{t('home.nationalHistory')}</h3>
+                        {nationalAverage ? <>
+                            <strong className="detail-price">{euro.format(nationalAverage.price)}<small> {t('home.perLitre')}</small></strong>
+                            <dl>
+                                <div><dt>{t('home.contributingProvinces')}</dt><dd>{nationalAverage.provinceCount}</dd></div>
+                                <div><dt>{t('home.validObservations')}</dt><dd>{nationalAverage.stationObservationCount}</dd></div>
+                                <div><dt>{t('home.sourceDateRange')}</dt><dd>{formatDate(nationalAverage.dataDateFrom)} – {formatDate(nationalAverage.dataDateTo)}</dd></div>
+                            </dl>
+                        </> : <div className="no-data-note"><span className="detail-icon">—</span><p>{t('home.noDataYet')}</p></div>}
+                    </>}
                     {selectedProvince && <button className="clear-selection" onClick={onClearSelection}>{t('home.showNationalAverage')} <span>→</span></button>}
                 </aside>
             </div>

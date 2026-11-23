@@ -1,5 +1,3 @@
-import type { SelectedProvince } from './province-map';
-
 export type NationalHistoryPoint = {
     date: string;
     price: number;
@@ -11,22 +9,13 @@ export type NationalHistoryPoint = {
     retrievedAtTo: string;
 };
 
-export type ProvincialHistoryPoint = {
-    date: string;
-    price: number;
-    observationCount: number;
-    sourceDate: string;
-    retrievedAt: string;
-};
-
-export type HistoryPoint = NationalHistoryPoint | ProvincialHistoryPoint;
+export type HistoryPoint = NationalHistoryPoint;
 export type Period = '1y' | '6m' | '3m' | '1m';
 
 export type HomeHistorySectionProps = {
     history: HistoryPoint[];
     period: Period;
     onPeriodChange: (period: Period) => void;
-    selectedProvince: SelectedProvince;
     loading: boolean;
     error: boolean;
     euro: Intl.NumberFormat;
