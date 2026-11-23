@@ -4,6 +4,7 @@ import { HomePage } from './pages/HomePage';
 import { InformationPage } from './pages/InformationPage';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
+import { AgregFloatingLink } from './components/AgregFloatingLink';
 import type { Page, Theme } from './types/app';
 
 const THEME_STORAGE_KEY = 'gases-theme';
@@ -67,13 +68,16 @@ export function App() {
     setTheme(nextTheme);
   }
 
-  return (
-    <div className="page-shell">
-      <Header theme={theme} toggleTheme={toggleTheme} />
-      <main>
-        {page === 'inicio' ? <HomePage theme={theme} /> : page === 'informacion' ? <InformationPage /> : <AboutPage />}
-      </main>
-      <Footer navigate={navigate} />
-    </div>
-  );
+    return (
+        <>
+            <div className="page-shell">
+                <Header theme={theme} toggleTheme={toggleTheme} />
+                <main>
+                    {page === 'inicio' ? <HomePage theme={theme} /> : page === 'informacion' ? <InformationPage /> : <AboutPage />}
+                </main>
+                <Footer navigate={navigate} />
+            </div>
+            <AgregFloatingLink />
+        </>
+    );
 }

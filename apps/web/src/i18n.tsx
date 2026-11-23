@@ -124,6 +124,10 @@ const messages = {
     'about.githubTitle': 'El proyecto en GitHub',
     'about.githubDescription': 'Consulta el código, sigue el desarrollo y descubre cómo se construye GasEs.',
     'about.repository': 'Ver repositorio',
+    'about.portfolio': 'PORTFOLIO',
+    'about.portfolioTitle': 'Portfolio de AGREG',
+    'about.portfolioDescription': 'Conoce otros proyectos y trabajos de desarrollo.',
+    'about.visitPortfolio': 'Ver portfolio',
 } as const;
 
 const galicianMessages: { [Key in keyof typeof messages]: string } = {
@@ -244,6 +248,10 @@ const galicianMessages: { [Key in keyof typeof messages]: string } = {
     'about.githubTitle': 'O proxecto en GitHub',
     'about.githubDescription': 'Consulta o código, segue o desenvolvemento e descubre como se constrúe GasEs.',
     'about.repository': 'Ver repositorio',
+    'about.portfolio': 'PORTFOLIO',
+    'about.portfolioTitle': 'Portfolio de AGREG',
+    'about.portfolioDescription': 'Coñece outros proxectos e traballos de desenvolvemento.',
+    'about.visitPortfolio': 'Ver portfolio',
 };
 
 const catalanMessages: { [Key in keyof typeof messages]: string } = {
@@ -364,6 +372,10 @@ const catalanMessages: { [Key in keyof typeof messages]: string } = {
     'about.githubTitle': 'El projecte a GitHub',
     'about.githubDescription': 'Consulta el codi, segueix el desenvolupament i descobreix com es construeix GasEs.',
     'about.repository': 'Mostra el repositori',
+    'about.portfolio': 'PORTFOLI',
+    'about.portfolioTitle': 'Portfoli de l’AGREG',
+    'about.portfolioDescription': 'Descobreix altres projectes i treballs de desenvolupament.',
+    'about.visitPortfolio': 'Mostra el portfoli',
 };
 
 const basqueMessages: { [Key in keyof typeof messages]: string } = {
@@ -484,6 +496,10 @@ const basqueMessages: { [Key in keyof typeof messages]: string } = {
     'about.githubTitle': 'Proiektua GitHuben',
     'about.githubDescription': 'Kontsultatu kodea, jarraitu garapena eta ikusi nola eraikitzen den GasEs.',
     'about.repository': 'Ikusi biltegia',
+    'about.portfolio': 'PORTFOLIOA',
+    'about.portfolioTitle': 'AGREGen portfolioa',
+    'about.portfolioDescription': 'Ezagutu beste proiektu eta garapen-lan batzuk.',
+    'about.visitPortfolio': 'Ikusi portfolioa',
 };
 
 export type MessageKey = keyof typeof messages;
