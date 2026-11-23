@@ -20,5 +20,4 @@ export type HomeHistorySectionProps = {
     error: boolean;
     euro: Intl.NumberFormat;
     formatDate: (value: string) => string;
-    formatDateTime: (value: string) => string;
 };

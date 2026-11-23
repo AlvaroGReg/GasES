@@ -138,7 +138,6 @@ export function HomePage({ theme }: HomePageProps) {
                 error={historyError}
                 euro={euro}
                 formatDate={formatDate}
-                formatDateTime={formatDateTime}
             />
 
             <HomeObservationsSection
